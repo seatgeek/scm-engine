@@ -1,0 +1,485 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jippi/scm-engine/pkg/config/config",
+  "$ref": "#/$defs/Config",
+  "$defs": {
+    "Action": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the action, this is purely for debugging and your convenience.\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.name"
+        },
+        "group": {
+          "type": "string",
+          "description": "(Optional) Only one action per group (in order) will be executed per evaluation cycle.\nUse this to 'stop' other actions from running with the same group name"
+        },
+        "if": {
+          "type": "string",
+          "description": "A key controlling if the action should executed or not.\n\nThis script is in Expr-lang: https://expr-lang.org/docs/language-definition\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if"
+        },
+        "then": {
+          "items": {
+            "$ref": "#/$defs/ActionStep"
+          },
+          "type": "array",
+          "description": "The list of operations to take if the action.if returned true.\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "if",
+        "then"
+      ]
+    },
+    "ActionStep": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "add_label"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              },
+              "label": {
+                "type": "string",
+                "description": "The label name to add.\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action",
+              "label"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "approve"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ],
+            "description": "Hello World?"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "assign_reviewers"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "codeowners"
+                ],
+                "description": "The source of the reviewers"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "The max number of reviewers to assign"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "random"
+                ],
+                "description": "The mode of assigning reviewers"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "close"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "comment"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              },
+              "message": {
+                "type": "string",
+                "description": "The message that will be commented on the Merge Request\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action",
+              "message"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "lock_discussion"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "remove_label"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              },
+              "label": {
+                "type": "string",
+                "description": "The label name to remove.\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action",
+              "label"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "reopen"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "unapprove"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "unlock_discussion"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "update_description"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "The action to take\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              },
+              "replace": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object",
+                "description": "A list of key/value pairs to replace in the description.\nThe key is the raw string to replace in the Merge Request description.\nThe value is an Expr Lang expression returning a string that key will be replaced with\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "action",
+              "replace"
+            ],
+            "description": "Updates the Merge Request Description"
+          }
+        }
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "add_label",
+            "approve",
+            "assign_reviewers",
+            "close",
+            "comment",
+            "lock_discussion",
+            "remove_label",
+            "reopen",
+            "unapprove",
+            "unlock_discussion",
+            "update_description"
+          ]
+        }
+      },
+      "type": "object",
+      "required": [
+        "action"
+      ]
+    },
+    "Actions": {
+      "items": {
+        "$ref": "#/$defs/Action"
+      },
+      "type": "array"
+    },
+    "Config": {
+      "properties": {
+        "dry_run": {
+          "type": "boolean",
+          "description": "(Optional) When on, no actions will be taken, but instead logged for review",
+          "default": false
+        },
+        "include": {
+          "items": {
+            "$ref": "#/$defs/Include"
+          },
+          "type": "array",
+          "description": "(Optional) Import configuration from other git repositories\n\nSee: https://jippi.github.io/scm-engine/configuration/#include"
+        },
+        "ignore_activity_from": {
+          "$ref": "#/$defs/IgnoreActivityFrom",
+          "description": "(Optional) Configure what users that should be ignored when considering activity on a Merge Request\n\nSCM-Engine defines activity as comments, reviews, commits, adding/removing labels and similar actions made on a change request.\n\nSee: https://jippi.github.io/scm-engine/configuration/#ignore_activity_from"
+        },
+        "actions": {
+          "$ref": "#/$defs/Actions",
+          "description": "(Optional) Actions can modify a Merge Request in various ways, for example, adding a comment or closing the Merge Request.\n\nSee: https://jippi.github.io/scm-engine/configuration/#actions"
+        },
+        "label": {
+          "$ref": "#/$defs/Labels",
+          "description": "(Optional) Labels are a way to categorize and filter issues, merge requests, and epics in GitLab. -- GitLab documentation\n\nSee: https://jippi.github.io/scm-engine/configuration/#label"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "IgnoreActivityFrom": {
+      "properties": {
+        "bots": {
+          "type": "boolean",
+          "description": "(Optional) Should bot users be ignored when considering activity? Default: false\n\nSee: https://jippi.github.io/scm-engine/configuration/#ignore_activity_from.bots",
+          "default": false
+        },
+        "usernames": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "(Optional) A list of usernames that should be ignored when considering user activity. Default: []\n\nSee: https://jippi.github.io/scm-engine/configuration/#ignore_activity_from.usernames"
+        },
+        "emails": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "(Optional) A list of emails that should be ignored when considering user activity. Default: []\nNOTE: If a user do not have a public email configured on their profile, that users activity will never match this rule.\n\nSee: https://jippi.github.io/scm-engine/configuration/#ignore_activity_from.emails"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Include": {
+      "properties": {
+        "project": {
+          "type": "string",
+          "description": "The project to include files from\n\nSee: https://jippi.github.io/scm-engine/configuration/#include.project"
+        },
+        "files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "The list of files to include from the project. The paths must be relative to the repository root, e.x. label/some-config-file.yml; NOT /label/some-config-file.yml\n\nSee: https://jippi.github.io/scm-engine/configuration/#include.files"
+        },
+        "ref": {
+          "type": "string",
+          "description": "(Optional) Git reference to read the configuration from; it can be a tag, branch, or commit SHA.\n\nIf omitted, HEAD is used; meaning your default branch.\n\nSee: https://jippi.github.io/scm-engine/configuration/#include.ref"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "project",
+        "files"
+      ]
+    },
+    "Label": {
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "conditional",
+            "generate"
+          ],
+          "description": "(Optional) Strategy used for the label\n\n- \"conditional\" will, based on the boolean output of [script], control if the label [name] should be added/removed on the MR\n- \"computed\" will, based on the list of strings output of [script], add/remove labels on the MR\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.strategy",
+          "default": "conditional"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the label being generated.\n\nMay only be used with [conditional] labelling type\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.name"
+        },
+        "description": {
+          "type": "string",
+          "description": "(Optional) Description for the label being generated.\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.description"
+        },
+        "color": {
+          "type": "string",
+          "description": "(Optional) The HEX color code to use for the label.\n\nMay use the color variables (e.g., $purple-300) defined in Twitter Bootstrap\nhttps://getbootstrap.com/docs/5.3/customize/color/#all-colors\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.color"
+        },
+        "priority": {
+          "$ref": "#/$defs/Value[int]",
+          "description": "(Optional) Priority controls wether the label should be a priority label or regular one.\n\nThis controls if the label is prioritized (sorted first) in the list.\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.priority"
+        },
+        "script": {
+          "type": "string",
+          "description": "Script contains the (https://expr-lang.org/) script used to emit labels for the MR.\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.script"
+        },
+        "skip_if": {
+          "type": "string",
+          "description": "SkipIf is an optional (https://expr-lang.org/) script, returning a boolean, wether to\nskip (true) or process (false) this label step.\n\nSee: https://jippi.github.io/scm-engine/configuration/#label.skip_if"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "script"
+      ]
+    },
+    "Labels": {
+      "items": {
+        "$ref": "#/$defs/Label"
+      },
+      "type": "array"
+    },
+    "Value[int]": {
+      "type": "number"
+    }
+  }
+}
