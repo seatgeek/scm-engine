@@ -1,0 +1,39 @@
+---
+version: 2
+interactions:
+    - id: 0
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 22
+        transfer_encoding: []
+        trailer: {}
+        host: example.gitlab.com
+        remote_addr: ""
+        request_uri: ""
+        body: '{"reviewer_ids":[1,2]}'
+        form: {}
+        headers:
+            Accept:
+                - application/json
+            Content-Type:
+                - application/json
+            Private-Token:
+                - PRIVATE_TOKEN
+            User-Agent:
+                - go-gitlab
+        url: https://example.gitlab.com/api/v4/projects/test-project/merge_requests/123
+        method: PUT
+      response:
+        proto: HTTP/2.0
+        proto_major: 2
+        proto_minor: 0
+        transfer_encoding: []
+        trailer: {}
+        content_length: 35
+        uncompressed: false
+        body: '{}'
+        status: 200 OK
+        code: 200
+        duration: 253.929417ms

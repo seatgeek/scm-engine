@@ -8,10 +8,9 @@ import (
 	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/jippi/scm-engine/pkg/state"
 	slogctx "github.com/veqryn/slog-context"
-	"github.com/xanzy/go-gitlab"
 )
 
-func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContext, update *scm.UpdateMergeRequestOptions, step scm.ActionStep) error {
+func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContext, step scm.ActionStep) error {
 	source, err := step.OptionalStringEnum("source", "codeowners", "codeowners")
 	if err != nil {
 		return err
@@ -93,10 +92,9 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 	}
 
 	// call GitLab API to update reviewers immediately, we don't want to wait for the next evaluation
-	_, _, err = c.wrapped.MergeRequests.UpdateMergeRequest(
-		state.ProjectID(ctx),
-		state.MergeRequestIDInt(ctx),
-		&gitlab.UpdateMergeRequestOptions{
+	_, err = c.MergeRequests().Update(
+		ctx,
+		&scm.UpdateMergeRequestOptions{
 			ReviewerIDs: &reviewerIDs,
 		},
 	)

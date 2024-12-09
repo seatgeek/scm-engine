@@ -2,14 +2,17 @@ package gitlab_test
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/jippi/scm-engine/pkg/config"
 	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/jippi/scm-engine/pkg/scm/gitlab"
 	"github.com/jippi/scm-engine/pkg/state"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"gopkg.in/dnaeon/go-vcr.v4/pkg/recorder"
 )
 
 type evalContextMock struct {
@@ -84,7 +87,6 @@ func TestAssignReviewers(t *testing.T) {
 		step                      config.ActionStep
 		mockGetReviewersResponse  scm.Actors
 		mockGetCodeOwnersResponse scm.Actors
-		wantUpdate                *scm.UpdateMergeRequestOptions
 		wantErr                   error
 	}{
 		{
@@ -94,7 +96,6 @@ func TestAssignReviewers(t *testing.T) {
 			},
 			mockGetReviewersResponse:  nil,
 			mockGetCodeOwnersResponse: nil,
-			wantUpdate:                &scm.UpdateMergeRequestOptions{},
 			wantErr:                   nil,
 		},
 		{
@@ -104,7 +105,6 @@ func TestAssignReviewers(t *testing.T) {
 			},
 			mockGetReviewersResponse:  nil,
 			mockGetCodeOwnersResponse: nil,
-			wantUpdate:                &scm.UpdateMergeRequestOptions{},
 			wantErr:                   nil,
 		},
 		{
@@ -119,9 +119,6 @@ func TestAssignReviewers(t *testing.T) {
 				{ID: "2", Username: "user2"},
 				{ID: "3", Username: "user3"},
 			},
-			wantUpdate: &scm.UpdateMergeRequestOptions{
-				ReviewerIDs: scm.Ptr([]int{1, 2}),
-			},
 			wantErr: nil,
 		},
 		{
@@ -135,9 +132,6 @@ func TestAssignReviewers(t *testing.T) {
 				{ID: "1", Username: "user1"},
 				{ID: "2", Username: "user2"},
 				{ID: "3", Username: "user3"},
-			},
-			wantUpdate: &scm.UpdateMergeRequestOptions{
-				ReviewerIDs: scm.Ptr([]int{1, 2, 3}),
 			},
 			wantErr: nil,
 		},
@@ -157,8 +151,7 @@ func TestAssignReviewers(t *testing.T) {
 				{ID: "2", Username: "user2"},
 				{ID: "1", Username: "user3"},
 			},
-			wantUpdate: &scm.UpdateMergeRequestOptions{},
-			wantErr:    nil,
+			wantErr: nil,
 		},
 	}
 
@@ -170,22 +163,30 @@ func TestAssignReviewers(t *testing.T) {
 			evalContext.On("GetReviewers").Return(tt.mockGetReviewersResponse)
 			evalContext.On("GetCodeOwners").Return(tt.mockGetCodeOwnersResponse)
 
-			client := &gitlab.Client{}
-			update := &scm.UpdateMergeRequestOptions{}
+			ctx := context.Background()
+			ctx = state.WithDryRun(ctx, false)
+			ctx = state.WithToken(ctx, "PRIVATE_TOKEN")
+			ctx = state.WithBaseURL(ctx, "https://example.gitlab.com")
+			ctx = state.WithRandomSeed(ctx, 1)
+			ctx = state.WithProjectID(ctx, "test-project")
+			ctx = state.WithMergeRequestID(ctx, "123")
+			ctx = state.WithCommitSHA(ctx, "abc123")
+
+			fixtureName := fmt.Sprintf("testdata/%s_%s", t.Name(), strings.ReplaceAll(tt.name, " ", "-"))
+
+			r, err := recorder.New(fixtureName)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer r.Stop()
+
+			client, err := gitlab.NewClient(ctx, gitlab.WithHTTPClient(r.GetDefaultClient()))
+			require.NoError(t, err)
+
 			step := tt.step
 
-			ctx := state.WithDryRun(context.Background(), false)
-			ctx = state.WithRandomSeed(ctx, 1)
-
-			err := client.AssignReviewers(ctx, evalContext, update, step)
-
-			assert.Equal(t, tt.wantErr, err)
-
-			if tt.wantUpdate.ReviewerIDs != nil {
-				wantLimit := len(*tt.wantUpdate.ReviewerIDs)
-				assert.Len(t, *update.ReviewerIDs, wantLimit)
-				assert.EqualValues(t, tt.wantUpdate.ReviewerIDs, update.ReviewerIDs)
-			}
+			err = client.AssignReviewers(ctx, evalContext, step)
+			require.Equal(t, tt.wantErr, err)
 		})
 	}
 }

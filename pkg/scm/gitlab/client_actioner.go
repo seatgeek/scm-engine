@@ -154,7 +154,7 @@ func (c *Client) ApplyStep(ctx context.Context, evalContext scm.EvalContext, upd
 		return err
 
 	case "assign_reviewers":
-		return c.AssignReviewers(ctx, evalContext, update, step)
+		return c.AssignReviewers(ctx, evalContext, step)
 
 	case "comment":
 		message, err := step.RequiredString("message")

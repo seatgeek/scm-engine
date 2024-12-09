@@ -62,16 +62,37 @@ type Client struct {
 
 	labels        *LabelClient
 	mergeRequests *MergeRequestClient
+	httpClient    *http.Client
+}
+
+type ClientOption func(*Client) error
+
+func WithHTTPClient(httpClient *http.Client) ClientOption {
+	return func(c *Client) error {
+		c.httpClient = httpClient
+
+		return nil
+	}
 }
 
 // NewClient creates a new GitLab client
-func NewClient(ctx context.Context) (*Client, error) {
-	client, err := go_gitlab.NewClient(state.Token(ctx), go_gitlab.WithBaseURL(state.BaseURL(ctx)))
+func NewClient(ctx context.Context, opts ...ClientOption) (*Client, error) {
+	client := &Client{}
+
+	for _, opt := range opts {
+		if err := opt(client); err != nil {
+			return nil, err
+		}
+	}
+
+	go_client, err := go_gitlab.NewClient(state.Token(ctx), go_gitlab.WithBaseURL(state.BaseURL(ctx)), go_gitlab.WithHTTPClient(client.httpClient))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{wrapped: client}, nil
+	client.wrapped = go_client
+
+	return client, nil
 }
 
 // Labels returns a client target at managing labels/tags
