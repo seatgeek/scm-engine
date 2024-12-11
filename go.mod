@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.57
 	github.com/aquilax/truncate v1.0.0
 	github.com/charmbracelet/lipgloss v1.0.0
+	github.com/datolabs-io/go-backstage/v3 v3.0.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/expr-lang/expr v1.16.9
 	github.com/fatih/structtag v1.2.0
@@ -31,7 +32,9 @@ require (
 	github.com/xanzy/go-gitlab v0.114.0
 	github.com/xhit/go-str2duration/v2 v2.1.0
 	golang.org/x/oauth2 v0.24.0
+	gopkg.in/dnaeon/go-vcr.v4 v4.0.2
 	gopkg.in/yaml.v3 v3.0.1
+	gotest.tools/v3 v3.5.1
 )
 
 require (
@@ -42,9 +45,9 @@ require (
 	github.com/charmbracelet/x/ansi v0.4.2 // indirect
 	github.com/coder/websocket v1.8.12 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
-	github.com/datolabs-io/go-backstage/v3 v3.0.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect

@@ -56,10 +56,14 @@ func (c *Client) GetEntityOwner(ctx context.Context, filters ...string) (*Entity
 			"spec.owner",
 		},
 	})
-	defer response.Body.Close()
-
 	if err != nil {
 		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get entity owner: %s", response.Status)
 	}
 
 	if len(systems) == 0 {
