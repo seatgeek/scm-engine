@@ -59,8 +59,6 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 					eligibleReviewers = append(eligibleReviewers, owner)
 				}
 			}
-
-			break
 		}
 
 		break
