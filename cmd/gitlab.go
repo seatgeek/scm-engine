@@ -93,6 +93,8 @@ var GitLab = &cli.Command{
 						"CI_COMMIT_SHA", // GitLab CI
 					},
 				},
+				StringFlagBackstageURL,
+				StringFlagBackstageToken,
 			},
 		},
 		{
@@ -184,6 +186,8 @@ var GitLab = &cli.Command{
 						"SCM_ENGINE_PERIODIC_EVALUATION_ONLY_PROJECTS_WITH_MEMBERSHIP",
 					},
 				},
+				StringFlagBackstageURL,
+				StringFlagBackstageToken,
 			},
 		},
 	},

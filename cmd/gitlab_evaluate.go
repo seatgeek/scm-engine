@@ -17,6 +17,10 @@ func Evaluate(cCtx *cli.Context) error {
 	ctx = state.WithToken(ctx, cCtx.String(FlagAPIToken))
 	ctx = state.WithUpdatePipeline(ctx, cCtx.Bool(FlagUpdatePipeline), cCtx.String(FlagUpdatePipelineURL))
 
+	// Optional Backstage catalog integration
+	ctx = state.WithBackstageURL(ctx, cCtx.String(FlagBackstageURL))
+	ctx = state.WithBackstageToken(ctx, cCtx.String(FlagBackstageToken))
+
 	cfg, err := config.LoadFile(state.ConfigFilePath(ctx))
 	if err != nil {
 		return err

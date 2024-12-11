@@ -27,6 +27,8 @@ const (
 	updatePipelineURL
 	evaluationID
 	randomSeed
+	backstageURL
+	backstageToken
 )
 
 func ProjectID(ctx context.Context) string {
@@ -174,4 +176,24 @@ func WithRandomSeed(ctx context.Context, seed int64) context.Context {
 	randSource := rand.New(rand.NewSource(seed)) //nolint:gosec
 
 	return context.WithValue(ctx, randomSeed, randSource)
+}
+
+func BackstageURL(ctx context.Context) string {
+	return ctx.Value(backstageURL).(string) //nolint:forcetypeassert
+}
+
+func WithBackstageURL(ctx context.Context, value string) context.Context {
+	ctx = context.WithValue(ctx, backstageURL, value)
+
+	return ctx
+}
+
+func BackstageToken(ctx context.Context) string {
+	return ctx.Value(backstageToken).(string) //nolint:forcetypeassert
+}
+
+func WithBackstageToken(ctx context.Context, value string) context.Context {
+	ctx = context.WithValue(ctx, backstageToken, value)
+
+	return ctx
 }

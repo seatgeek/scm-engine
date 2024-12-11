@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jippi/scm-engine/pkg/config"
+	"github.com/jippi/scm-engine/pkg/integration/backstage"
 	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/jippi/scm-engine/pkg/scm/github"
 	"github.com/jippi/scm-engine/pkg/scm/gitlab"
@@ -20,12 +21,17 @@ import (
 var sid = shortid.MustNew(1, shortid.DefaultABC, 2342)
 
 func getClient(ctx context.Context) (scm.Client, error) {
+	backstageClient, err := backstage.NewClient(ctx, state.BackstageURL(ctx), state.BackstageToken(ctx), nil)
+	if err != nil {
+		slogctx.Warn(ctx, "Backstage client is not available, actions requiring it will be skipped", slog.Any("error", err))
+	}
+
 	switch state.Provider(ctx) {
 	case "github":
 		return github.NewClient(ctx), nil
 
 	case "gitlab":
-		return gitlab.NewClient(ctx)
+		return gitlab.NewClient(ctx, backstageClient)
 
 	default:
 		return nil, fmt.Errorf("unknown provider %q - we only support 'github' and 'gitlab'", state.Provider(ctx))

@@ -10,7 +10,7 @@ import (
 )
 
 func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContext, update *scm.UpdateMergeRequestOptions, step scm.ActionStep) error {
-	source, err := step.OptionalStringEnum("source", "codeowners", "codeowners")
+	source, err := step.RequiredStringEnum("source", "codeowners", "backstage")
 	if err != nil {
 		return err
 	}
@@ -38,6 +38,30 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 	switch source {
 	case "codeowners":
 		eligibleReviewers = evalContext.GetCodeOwners()
+
+		break
+	case "backstage":
+		if c.backstage == nil {
+			slogctx.Warn(ctx, "Backstage client not initialized and source is backstage, skipping")
+
+			break
+		}
+
+		projectName, err := ParseProjectName(state.ProjectID(ctx))
+		if err != nil {
+			return err
+		}
+
+		owners, err := c.backstage.GetOwnersForGitLabProject(ctx, projectName)
+		if err != nil {
+			return err
+		}
+
+		for _, owner := range owners {
+			if evalContext.GetAuthor().ID != owner.ID {
+				eligibleReviewers = append(eligibleReviewers, owner)
+			}
+		}
 
 		break
 	}
