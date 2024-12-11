@@ -5,11 +5,15 @@ import (
 	"testing"
 
 	"github.com/jippi/scm-engine/pkg/config"
+	"github.com/jippi/scm-engine/pkg/integration/backstage"
 	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/jippi/scm-engine/pkg/scm/gitlab"
 	"github.com/jippi/scm-engine/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
+	"github.com/jippi/scm-engine/testutils"
 )
 
 type evalContextMock struct {
@@ -86,7 +90,7 @@ func (c *evalContextMock) GetAuthor() scm.Actor {
 	return scm.Actor{}
 }
 
-func TestAssignReviewers(t *testing.T) {
+func TestAssignReviewers_codeowners(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -193,6 +197,71 @@ func TestAssignReviewers(t *testing.T) {
 
 			if tt.wantUpdate.ReviewerIDs != nil {
 				wantLimit := len(*tt.wantUpdate.ReviewerIDs)
+				assert.Len(t, *update.ReviewerIDs, wantLimit)
+				assert.EqualValues(t, tt.wantUpdate.ReviewerIDs, update.ReviewerIDs)
+			}
+		})
+	}
+}
+
+func TestAssignReviewers_backstage(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name                     string
+		step                     config.ActionStep
+		mockGetReviewersResponse scm.Actors
+		wantUpdate               *scm.UpdateMergeRequestOptions
+		wantErr                  error
+	}{
+		{
+			name: "should skip adding author to reviewers",
+			step: config.ActionStep{
+				"source": "backstage",
+			},
+			mockGetReviewersResponse: scm.Actors{},
+			wantUpdate: &scm.UpdateMergeRequestOptions{
+				ReviewerIDs: scm.Ptr([]int{2}),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			evalContext := new(evalContextMock)
+			evalContext.On("GetAuthor").Return(scm.Actor{ID: "1", Username: "user1"})
+			evalContext.On("GetReviewers").Return(tt.mockGetReviewersResponse)
+
+			ctx := state.WithDryRun(context.Background(), false)
+			ctx = state.WithBaseURL(ctx, "https://gitlab.example.com")
+			ctx = state.WithToken(ctx, "token")
+			ctx = state.WithProjectID(ctx, "group/test-system")
+			ctx = state.WithRandomSeed(ctx, 1)
+
+			r := testutils.GetRecorder(t)
+			defer r.Stop()
+
+			backstageClient, err := backstage.NewClient(ctx, "https://backstage.example.com", "", r.GetDefaultClient())
+			if err != nil {
+				t.Fatalf("failed to create backstage client: %v", err)
+			}
+
+			client, err := gitlab.NewClient(ctx, backstageClient)
+			if err != nil {
+				t.Fatalf("failed to create gitlab client: %v", err)
+			}
+
+			update := &scm.UpdateMergeRequestOptions{}
+
+			err = client.AssignReviewers(ctx, evalContext, update, tt.step)
+
+			assert.Equal(t, tt.wantErr, err)
+
+			if tt.wantUpdate.ReviewerIDs != nil {
+				wantLimit := len(*tt.wantUpdate.ReviewerIDs)
+				require.NotNil(t, update.ReviewerIDs)
 				assert.Len(t, *update.ReviewerIDs, wantLimit)
 				assert.EqualValues(t, tt.wantUpdate.ReviewerIDs, update.ReviewerIDs)
 			}

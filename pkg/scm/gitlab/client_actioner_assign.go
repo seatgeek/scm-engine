@@ -44,20 +44,22 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 		if c.backstage == nil {
 			slogctx.Warn(ctx, "Backstage client not initialized and source is backstage, skipping")
 
-			projectName, err := ParseProjectName(state.ProjectID(ctx))
-			if err != nil {
-				return err
-			}
+			break
+		}
 
-			owners, err := c.backstage.GetOwnersForGitLabProject(ctx, projectName)
-			if err != nil {
-				return err
-			}
+		projectName, err := ParseProjectName(state.ProjectID(ctx))
+		if err != nil {
+			return err
+		}
 
-			for _, owner := range owners {
-				if evalContext.GetAuthor().ID != owner.ID {
-					eligibleReviewers = append(eligibleReviewers, owner)
-				}
+		owners, err := c.backstage.GetOwnersForGitLabProject(ctx, projectName)
+		if err != nil {
+			return err
+		}
+
+		for _, owner := range owners {
+			if evalContext.GetAuthor().ID != owner.ID {
+				eligibleReviewers = append(eligibleReviewers, owner)
 			}
 		}
 
