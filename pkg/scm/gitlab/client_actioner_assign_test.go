@@ -2,6 +2,7 @@ package gitlab_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/jippi/scm-engine/pkg/config"
@@ -102,14 +103,14 @@ func TestAssignReviewers_codeowners(t *testing.T) {
 		wantErr                   error
 	}{
 		{
-			name: "should not error on no source provided",
+			name: "should error on no source provided",
 			step: config.ActionStep{
 				"limit": 2,
 			},
 			mockGetReviewersResponse:  nil,
 			mockGetCodeOwnersResponse: nil,
 			wantUpdate:                &scm.UpdateMergeRequestOptions{},
-			wantErr:                   nil,
+			wantErr:                   errors.New("Required 'step' key 'source' is missing"),
 		},
 		{
 			name: "should not error on no limit provided",
