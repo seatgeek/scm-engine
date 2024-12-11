@@ -19,7 +19,7 @@ interactions:
                 - application/json
             Authorization:
                 - REDACTED
-        url: https://backstage.example.com/api/catalog/entities/by-name/user/default/missing-user
+        url: https://backstage.example.com/api/catalog/entities?filter=kind%3Duser%2Crelations.memberof%3Ddefault%2Fmissing-group
         method: GET
       response:
         proto: HTTP/2.0
@@ -27,9 +27,9 @@ interactions:
         proto_minor: 0
         transfer_encoding: []
         trailer: {}
-        content_length: 233
+        content_length: 2
         uncompressed: false
-        body: '{"error":{"name":"NotFoundError","message":"No entity named ''missing-user'' found, with kind ''user'' in namespace ''default''"},"request":{"method":"GET","url":"/entities/by-name/user/default/missing-user"},"response":{"statusCode":404}}'
-        status: 404 Not Found
-        code: 404
-        duration: 452.979083ms
+        body: '[]'
+        status: 200 OK
+        code: 200
+        duration: 458.397583ms

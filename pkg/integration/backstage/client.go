@@ -117,10 +117,14 @@ func (c *Client) ListGroupMembers(ctx context.Context, groupEntityRef *EntityRef
 			"kind=user,relations.memberof=" + groupEntityRef.ToString(),
 		},
 	})
-	defer response.Body.Close()
-
 	if err != nil {
 		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Failed to get group members: %s", response.Status)
 	}
 
 	return users, nil

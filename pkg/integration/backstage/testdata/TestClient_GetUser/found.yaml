@@ -17,6 +17,8 @@ interactions:
         headers:
             Accept:
                 - application/json
+            Authorization:
+                - REDACTED
         url: https://backstage.example.com/api/catalog/entities/by-name/user/default/test-user
         method: GET
       response:
