@@ -541,6 +541,24 @@ GitLab
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#assign-reviewers-from-codeowners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assign reviewers from CODEOWNERS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign-reviewers-from-backstage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assign reviewers from Backstage
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -788,6 +806,24 @@ GitHub (WIP)
   <a href="#generate-labels-via-script" class="md-nav__link">
     <span class="md-ellipsis">
       Generate labels via script
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign-reviewers-from-codeowners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assign reviewers from CODEOWNERS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign-reviewers-from-backstage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assign reviewers from Backstage
     </span>
   </a>
   
@@ -1070,6 +1106,40 @@ GitHub (WIP)
 </div>
 </div>
 </div>
+<h2 id="assign-reviewers-from-codeowners">Assign reviewers from CODEOWNERS<a class="headerlink" href="#assign-reviewers-from-codeowners" title="Permanent link">&para;</a></h2>
+<p>The <code>codeowners</code> source relies on the GitLab <a href="https://docs.gitlab.com/ee/user/project/codeowners/">CODE OWNERS</a> feature.</p>
+<p>For a reviewer to be assigned to a Merge Request, the project must have a CODEOWNERS file and the groups/users mentioned in the file must have <a href="https://gitlab.com/gitlab-org/gitlab/-/issues/288851/">direct membership</a> to the project.</p>
+<div class="language-yaml highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nt">actions</span><span class="p">:</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;assign&quot;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|1</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">           </span><span class="no">merge_request.state_is(&quot;opened&quot;)</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="no">&amp;&amp; not merge_request.approved</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="nt">then</span><span class="p">:</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">assign_reviewers</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codeowners</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">        </span><span class="nt">limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">        </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random</span>
+</code></pre></div>
+<h2 id="assign-reviewers-from-backstage">Assign reviewers from Backstage<a class="headerlink" href="#assign-reviewers-from-backstage" title="Permanent link">&para;</a></h2>
+<p>The <code>backstage</code> source relies on the <a href="https://backstage.io/docs/features/software-catalog/">Backstage Catalog</a> to derive ownership information.</p>
+<p>This assumes <a href="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system">System</a> and <a href="https://backstage.io/docs/features/software-catalog/descriptor-format/#kind-user">User</a> in Backstage can be mapped directly to a GitLab project and user.</p>
+<p>For a Backstage System entity to be mapped to a GitLab project, the system must  have same name as the GitLab project or the <code>gitlab.com/project</code> annotation is set to the GitLab project name.</p>
+<p>For a Backstage User entity to be mapped to a GitLab user, the user must have the <code>gitlab.com/user_id</code> annotation set to the numeric ID of the user. A plugin that can be used to automatically set this annotation is <a href="https://github.com/seatgeek/backstage-plugins/tree/main/plugins/gitlab-catalog-backend">@seatgeek/backstage-plugin-gitlab-catalog-backend</a>.</p>
+<div class="language-yaml highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nt">actions</span><span class="p">:</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;assign&quot;</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|1</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">           </span><span class="no">merge_request.state_is(&quot;opened&quot;)</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">        </span><span class="no">&amp;&amp; not merge_request.approved</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">then</span><span class="p">:</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">assign_reviewers</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backstage</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">        </span><span class="nt">limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">        </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random</span>
+</code></pre></div>
 
 
 

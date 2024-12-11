@@ -102,7 +102,8 @@
               "source": {
                 "type": "string",
                 "enum": [
-                  "codeowners"
+                  "codeowners",
+                  "backstage"
                 ],
                 "description": "The source of the reviewers"
               },
@@ -121,7 +122,8 @@
             "additionalProperties": false,
             "type": "object",
             "required": [
-              "action"
+              "action",
+              "source"
             ]
           }
         },

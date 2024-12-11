@@ -906,13 +906,15 @@ GitHub (WIP)
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>   --project value              GitLab project (example: &#39;gitlab-org/gitlab&#39;) [$GITLAB_PROJECT, $CI_PROJECT_PATH]
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>   --id value                   The Merge Request ID to process, if not provided as a CLI flag [$CI_MERGE_REQUEST_IID]
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>   --commit value               The git commit sha [$CI_COMMIT_SHA]
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>   --help, -h                   show help
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>GLOBAL OPTIONS:
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>   --config value  Path to the scm-engine config file (default: &quot;.scm-engine.yml&quot;) [$SCM_ENGINE_CONFIG_FILE]
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>   --dry-run       Dry run, don&#39;t actually _do_ actions, just print them (default: false) [$SCM_ENGINE_DRY_RUN]
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>   --help, -h      show help
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>   --version, -v   print the version
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>   --backstage-url value        The Backstage base URL [$BACKSTAGE_URL]
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>   --backstage-token value      The Backstage static token with access to the catalog plugin [$BACKSTAGE_TOKEN]
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>   --help, -h                   show help
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>GLOBAL OPTIONS:
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>   --config value  Path to the scm-engine config file (default: &quot;.scm-engine.yml&quot;) [$SCM_ENGINE_CONFIG_FILE]
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>   --dry-run       Dry run, don&#39;t actually _do_ actions, just print them (default: false) [$SCM_ENGINE_DRY_RUN]
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>   --help, -h      show help
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>   --version, -v   print the version
 </code></pre></div>
 <h2 id="scm-engine-gitlab-server"><code>scm-engine gitlab server</code><a class="headerlink" href="#scm-engine-gitlab-server" title="Permanent link">&para;</a></h2>
 <p>Point your GitLab webhook at the <code>/gitlab</code> endpoint.</p>
@@ -943,13 +945,15 @@ GitHub (WIP)
 <a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>   --periodic-evaluation-require-mr-labels value [ --periodic-evaluation-require-mr-labels value ]  (Optional) Only process MR with these labels [$SCM_ENGINE_PERIODIC_EVALUATION_REQUIRE_MR_WITH_LABELS]
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>   --periodic-evaluation-project-topics value [ --periodic-evaluation-project-topics value ]        (Optional) Only evaluate projects with these topics [$SCM_ENGINE_PERIODIC_EVALUATION_REQUIRE_PROJECT_TOPICS]
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>   --periodic-evaluation-only-project-membership                                                    (Optional) Only evaluate projects with membership (default: true) [$SCM_ENGINE_PERIODIC_EVALUATION_ONLY_PROJECTS_WITH_MEMBERSHIP]
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>   --help, -h                                                                                       show help
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>GLOBAL OPTIONS:
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>   --config value  Path to the scm-engine config file (default: &quot;.scm-engine.yml&quot;) [$SCM_ENGINE_CONFIG_FILE]
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>   --dry-run       Dry run, don&#39;t actually _do_ actions, just print them (default: false) [$SCM_ENGINE_DRY_RUN]
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>   --help, -h      show help
-<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>   --version, -v   print the version
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>   --backstage-url value                                                                            The Backstage base URL [$BACKSTAGE_URL]
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>   --backstage-token value                                                                          The Backstage static token with access to the catalog plugin [$BACKSTAGE_TOKEN]
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>   --help, -h                                                                                       show help
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>GLOBAL OPTIONS:
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>   --config value  Path to the scm-engine config file (default: &quot;.scm-engine.yml&quot;) [$SCM_ENGINE_CONFIG_FILE]
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>   --dry-run       Dry run, don&#39;t actually _do_ actions, just print them (default: false) [$SCM_ENGINE_DRY_RUN]
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>   --help, -h      show help
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>   --version, -v   print the version
 </code></pre></div>
 
 
