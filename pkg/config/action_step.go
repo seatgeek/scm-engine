@@ -77,7 +77,7 @@ type AssignReviewers struct {
 	BaseAction
 
 	// The source of the reviewers
-	Source *string `json:"source,omitempty" yaml:"source,omitempty" jsonschema:"enum=codeowners"`
+	Source string `json:"source" yaml:"source,omitempty" jsonschema:"enum=codeowners,enum=backstage"`
 	// The max number of reviewers to assign
 	Limit int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	// The mode of assigning reviewers
