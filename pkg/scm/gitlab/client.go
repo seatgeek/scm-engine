@@ -111,7 +111,7 @@ func NewClient(ctx context.Context, opts ...ClientOption) (*Client, error) {
 			}))
 		}
 
-		backstageClient, err := backstage.NewClient(state.BackstageURL(ctx), state.BackstageNamespace(ctx), backstageHTTPClient)
+		backstageClient, err := backstage.NewClient(state.BackstageURL(ctx), "default", backstageHTTPClient)
 		if err != nil {
 			return nil, err
 		}

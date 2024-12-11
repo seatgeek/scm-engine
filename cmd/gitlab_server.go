@@ -28,7 +28,6 @@ func Server(cCtx *cli.Context) error {
 
 	// Optional Backstage catalog integration
 	ctx = state.WithBackstageURL(ctx, cCtx.String(FlagBackstageURL))
-	ctx = state.WithBackstageNamespace(ctx, cCtx.String(FlagBackstageNamespace))
 	ctx = state.WithBackstageToken(ctx, cCtx.String(FlagBackstageToken))
 
 	// Add logging context key/value pairs

@@ -5,7 +5,6 @@ import "github.com/urfave/cli/v2"
 const (
 	FlagAPIToken                                        = "api-token"
 	FlagBackstageURL                                    = "backstage-url"
-	FlagBackstageNamespace                              = "backstage-namespace"
 	FlagBackstageToken                                  = "backstage-token"
 	FlagCommitSHA                                       = "commit"
 	FlagConfigFile                                      = "config"
@@ -33,14 +32,6 @@ var (
 		EnvVars: []string{
 			"BACKSTAGE_URL", // Backstage catalog integration
 		},
-	}
-	StringFlagBackstageNamespace = &cli.StringFlag{
-		Name:  FlagBackstageNamespace,
-		Usage: "The Backstage namespace",
-		EnvVars: []string{
-			"BACKSTAGE_NAMESPACE", // Backstage catalog integration
-		},
-		Value: "default",
 	}
 	StringFlagBackstageToken = &cli.StringFlag{
 		Name:  FlagBackstageToken,

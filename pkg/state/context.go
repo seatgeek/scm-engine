@@ -189,16 +189,6 @@ func WithBackstageURL(ctx context.Context, value string) context.Context {
 	return ctx
 }
 
-func BackstageNamespace(ctx context.Context) string {
-	return ctx.Value(backstageNamespace).(string) //nolint:forcetypeassert
-}
-
-func WithBackstageNamespace(ctx context.Context, value string) context.Context {
-	ctx = context.WithValue(ctx, backstageNamespace, value)
-
-	return ctx
-}
-
 func BackstageToken(ctx context.Context) string {
 	return ctx.Value(backstageToken).(string) //nolint:forcetypeassert
 }
