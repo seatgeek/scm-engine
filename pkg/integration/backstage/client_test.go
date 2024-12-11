@@ -9,6 +9,7 @@ import (
 
 	go_backstage "github.com/datolabs-io/go-backstage/v3"
 	"github.com/jippi/scm-engine/pkg/integration/backstage"
+	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/cassette"
@@ -236,6 +237,50 @@ func TestClient_ListGroupMembers(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.DeepEqual(t, tt.want, members)
+		})
+	}
+}
+
+func TestClient_GetOwnersForGitLabProject(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		arg     string
+		want    []scm.Actor
+		wantErr error
+	}{
+		{
+			name: "found",
+			arg:  "test-system",
+			want: []scm.Actor{
+				{
+					ID: "1",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r := getRecorder(t)
+			defer r.Stop()
+
+			client, err := backstage.NewClient(context.Background(), "https://backstage.example.com", "", r.GetDefaultClient())
+			require.NoError(t, err)
+
+			owners, err := client.GetOwnersForGitLabProject(context.Background(), tt.arg)
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.ErrorContains(t, tt.wantErr, err.Error())
+
+				return
+			}
+
+			require.NoError(t, err)
+			assert.DeepEqual(t, tt.want, owners)
 		})
 	}
 }

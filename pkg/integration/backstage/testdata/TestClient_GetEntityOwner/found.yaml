@@ -19,8 +19,6 @@ interactions:
                 - application/json
             Authorization:
                 - REDACTED
-            User-Agent:
-                - go-backstage
         url: https://backstage.example.com/api/catalog/entities?fields=spec.owner&filter=kind%3Dsystem%2Cmetadata.name%3Dtest-system
         method: GET
       response:
