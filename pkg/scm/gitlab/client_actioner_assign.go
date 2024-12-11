@@ -10,7 +10,7 @@ import (
 )
 
 func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContext, update *scm.UpdateMergeRequestOptions, step scm.ActionStep) error {
-	source, err := step.OptionalStringEnum("source", "codeowners", "codeowners", "backstage")
+	source, err := step.RequiredStringEnum("source", "codeowners", "backstage")
 	if err != nil {
 		return err
 	}
