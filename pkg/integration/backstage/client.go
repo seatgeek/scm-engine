@@ -8,12 +8,18 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type Client struct {
+var _ Client = (*client)(nil)
+
+type Client interface {
+	ListEntities(ctx context.Context, options *go_backstage.ListEntityOptions) ([]go_backstage.Entity, error)
+}
+
+type client struct {
 	wrapped *go_backstage.Client
 }
 
 // NewClient creates a new Backstage client with an optional bearer token
-func NewClient(ctx context.Context, baseURL string, token string) (*Client, error) {
+func NewClient(ctx context.Context, baseURL string, token string) (Client, error) {
 	var httpClient *http.Client
 
 	if token != "" {
@@ -23,10 +29,21 @@ func NewClient(ctx context.Context, baseURL string, token string) (*Client, erro
 		}))
 	}
 
-	client, err := go_backstage.NewClient(baseURL, token, httpClient)
+	backstageClient, err := go_backstage.NewClient(baseURL, token, httpClient)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{wrapped: client}, nil
+	return &client{wrapped: backstageClient}, nil
+}
+
+func (c *client) ListEntities(ctx context.Context, options *go_backstage.ListEntityOptions) ([]go_backstage.Entity, error) {
+	entities, response, err := c.wrapped.Catalog.Entities.List(ctx, options)
+	response.Body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return entities, nil
 }
