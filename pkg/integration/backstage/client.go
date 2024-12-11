@@ -94,10 +94,14 @@ func (c *Client) GetEntityOwner(ctx context.Context, filters ...string) (*Entity
 // GetUser returns a Backstage user entity.
 func (c *Client) GetUser(ctx context.Context, userEntityRef *EntityReference) (*go_backstage.UserEntityV1alpha1, error) {
 	user, response, err := c.wrapped.Catalog.Users.Get(ctx, userEntityRef.Name, userEntityRef.Namespace)
-	defer response.Body.Close()
-
 	if err != nil {
 		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Failed to get user: %s", response.Status)
 	}
 
 	return user, nil
