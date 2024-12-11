@@ -76,6 +76,16 @@ func (c *evalContextMock) GetReviewers() scm.Actors {
 	return nil
 }
 
+func (c *evalContextMock) GetAuthor() scm.Actor {
+	args := c.Called()
+
+	if actor, ok := args.Get(0).(scm.Actor); ok {
+		return actor
+	}
+
+	return scm.Actor{}
+}
+
 func TestAssignReviewers(t *testing.T) {
 	t.Parallel()
 
