@@ -28,7 +28,6 @@ const (
 	evaluationID
 	randomSeed
 	backstageURL
-	backstageNamespace
 	backstageToken
 )
 
