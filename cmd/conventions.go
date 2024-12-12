@@ -9,6 +9,7 @@ const (
 	FlagCommitSHA                                       = "commit"
 	FlagConfigFile                                      = "config"
 	FlagDryRun                                          = "dry-run"
+	FlagGlobalConfigFile                                = "global-config"
 	FlagMergeRequestID                                  = "id"
 	FlagSCMBaseURL                                      = "base-url"
 	FlagSCMProject                                      = "project"

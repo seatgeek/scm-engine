@@ -129,3 +129,23 @@ func (c *Config) LoadIncludes(ctx context.Context, client scm.Client) error {
 
 	return nil
 }
+
+// Merge merges the other config into the current config
+func (c *Config) Merge(other *Config) *Config {
+	if other == nil {
+		return c
+	}
+
+	if other.DryRun != nil {
+		c.DryRun = other.DryRun
+	}
+
+	c.IgnoreActivityFrom.IsBot = other.IgnoreActivityFrom.IsBot
+	c.IgnoreActivityFrom.Usernames = append(c.IgnoreActivityFrom.Usernames, other.IgnoreActivityFrom.Usernames...)
+	c.IgnoreActivityFrom.Emails = append(c.IgnoreActivityFrom.Emails, other.IgnoreActivityFrom.Emails...)
+
+	c.Actions = append(c.Actions, other.Actions...)
+	c.Labels = append(c.Labels, other.Labels...)
+
+	return c
+}

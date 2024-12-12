@@ -29,6 +29,7 @@ const (
 	randomSeed
 	backstageURL
 	backstageToken
+	globalConfigFilePath
 )
 
 func ProjectID(ctx context.Context) string {
@@ -194,6 +195,16 @@ func BackstageToken(ctx context.Context) string {
 
 func WithBackstageToken(ctx context.Context, value string) context.Context {
 	ctx = context.WithValue(ctx, backstageToken, value)
+
+	return ctx
+}
+
+func GlobalConfigFilePath(ctx context.Context) string {
+	return ctx.Value(globalConfigFilePath).(string) //nolint:forcetypeassert
+}
+
+func WithGlobalConfigFilePath(ctx context.Context, value string) context.Context {
+	ctx = context.WithValue(ctx, globalConfigFilePath, value)
 
 	return ctx
 }
