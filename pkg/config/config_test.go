@@ -81,6 +81,19 @@ func TestConfig_Merge(t *testing.T) {
 			},
 			want: &config.Config{Labels: config.Labels{{Name: "label1"}, {Name: "label2"}}},
 		},
+		{
+			name: "merge includes",
+			cfg:  &config.Config{Includes: []config.Include{{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1"}}}},
+			other: &config.Config{
+				Includes: []config.Include{{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file2"}}},
+			},
+			want: &config.Config{
+				Includes: []config.Include{
+					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1"}},
+					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file2"}},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

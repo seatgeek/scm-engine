@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/jippi/scm-engine/pkg/scm"
@@ -147,5 +148,23 @@ func (c *Config) Merge(other *Config) *Config {
 	c.Actions = append(c.Actions, other.Actions...)
 	c.Labels = append(c.Labels, other.Labels...)
 
+	// don't have to worry about duplication here, it is handled when loading the includes
+	c.Includes = append(c.Includes, other.Includes...)
+
 	return c
+}
+
+func key(project string, ref *string, file string) string {
+	var b strings.Builder
+	b.WriteString(project)
+
+	if ref != nil {
+		b.WriteString(":")
+		b.WriteString(*ref)
+	}
+
+	b.WriteString(":")
+	b.WriteString(file)
+
+	return b.String()
 }
