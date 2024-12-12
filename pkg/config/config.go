@@ -155,16 +155,16 @@ func (c *Config) Merge(other *Config) *Config {
 }
 
 func key(project string, ref *string, file string) string {
-	var b strings.Builder
-	b.WriteString(project)
+	var builder strings.Builder
+	builder.WriteString(project)
 
 	if ref != nil {
-		b.WriteString(":")
-		b.WriteString(*ref)
+		builder.WriteString(":")
+		builder.WriteString(*ref)
 	}
 
-	b.WriteString(":")
-	b.WriteString(file)
+	builder.WriteString(":")
+	builder.WriteString(file)
 
-	return b.String()
+	return builder.String()
 }
