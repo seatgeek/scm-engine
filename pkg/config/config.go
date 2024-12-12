@@ -156,6 +156,7 @@ func (c *Config) Merge(other *Config) *Config {
 
 func key(project string, ref *string, file string) string {
 	var builder strings.Builder
+
 	builder.WriteString(project)
 
 	if ref != nil {
