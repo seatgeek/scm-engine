@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/jippi/scm-engine/pkg/scm"
@@ -152,20 +151,4 @@ func (c *Config) Merge(other *Config) *Config {
 	c.Includes = append(c.Includes, other.Includes...)
 
 	return c
-}
-
-func key(project string, ref *string, file string) string {
-	var builder strings.Builder
-
-	builder.WriteString(project)
-
-	if ref != nil {
-		builder.WriteString(":")
-		builder.WriteString(*ref)
-	}
-
-	builder.WriteString(":")
-	builder.WriteString(file)
-
-	return builder.String()
 }
