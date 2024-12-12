@@ -3,6 +3,7 @@ package gitlab
 import (
 	"context"
 	"log/slog"
+	"strconv"
 
 	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/jippi/scm-engine/pkg/state"
@@ -57,8 +58,9 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 			return err
 		}
 
+		authorID := strconv.Itoa(evalContext.GetAuthor().IntID())
 		for _, owner := range owners {
-			if evalContext.GetAuthor().ID != owner.ID {
+			if authorID != owner.ID {
 				eligibleReviewers = append(eligibleReviewers, owner)
 			}
 		}
