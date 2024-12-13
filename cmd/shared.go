@@ -148,8 +148,8 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 		return fmt.Errorf("Configuration failed validation: %w", err)
 	}
 
-	// Write the config to context so we can pull it out later, if a global config file was set
-	// this overrides the global config with the merge global and repository config
+	// Write the config to context so we can pull it out later
+	// If a global config file was set, this overrides the global config with the merged global and repository config
 	ctx = config.WithConfig(ctx, cfg)
 
 	//
