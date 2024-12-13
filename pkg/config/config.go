@@ -131,14 +131,12 @@ func (c *Config) LoadIncludes(ctx context.Context, client scm.Client) error {
 }
 
 // Merge merges the other config into the current config
-func (c *Config) Merge(other *Config) *Config {
+func (c *Config) Merge(other *Config) {
 	if other == nil {
-		return c
+		return
 	}
 
-	if other.DryRun != nil {
-		c.DryRun = other.DryRun
-	}
+	c.DryRun = other.DryRun
 
 	c.IgnoreActivityFrom.IsBot = other.IgnoreActivityFrom.IsBot
 	c.IgnoreActivityFrom.Usernames = append(c.IgnoreActivityFrom.Usernames, other.IgnoreActivityFrom.Usernames...)
@@ -150,5 +148,5 @@ func (c *Config) Merge(other *Config) *Config {
 	// don't have to worry about duplication here, it is handled when loading the includes
 	c.Includes = append(c.Includes, other.Includes...)
 
-	return c
+	return
 }

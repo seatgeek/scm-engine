@@ -28,7 +28,7 @@ func TestConfig_Merge(t *testing.T) {
 			},
 		},
 		{
-			name: "do not override dry run when other dry run is nil",
+			name: "override dry run",
 			cfg: &config.Config{
 				DryRun: scm.Ptr(false),
 			},
@@ -36,7 +36,7 @@ func TestConfig_Merge(t *testing.T) {
 				DryRun: nil,
 			},
 			want: &config.Config{
-				DryRun: scm.Ptr(false),
+				DryRun: nil,
 			},
 		},
 		{

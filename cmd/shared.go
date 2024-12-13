@@ -123,7 +123,8 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 	// Merge previously loaded config with Repository config
 	ctxConfig := config.FromContext(ctx) // the global config if previously loaded
 	if ctxConfig != nil && cfg != nil {
-		cfg = ctxConfig.Merge(cfg)
+		ctxConfig.Merge(cfg)
+		cfg = ctxConfig
 	}
 
 	// Sanity check for having a configuration loaded
