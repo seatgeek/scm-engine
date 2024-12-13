@@ -1259,6 +1259,8 @@ GitHub (WIP)
 <h1 id="configuration-file">Configuration file<a class="headerlink" href="#configuration-file" title="Permanent link">&para;</a></h1>
 <p>The default configuration filename is <code>.scm-engine.yml</code>, either in current working directory, or if you are in a Git repository, the root of the project.</p>
 <p>The file path can be changed via <code>--config</code> CLI flag and <code class="language-css highlight"><span class="o">$</span><span class="nt">SCM_ENGINE_CONFIG_FILE</span></code> environment variable.</p>
+<p>A global configuration file can be specified via the <code>--global-config</code> CLI flag and <code class="language-css highlight"><span class="o">$</span><span class="nt">SCM_ENGINE_GLOBAL_CONFIG_FILE</span></code> environment variable.</p>
+<p>The global configuration file is optional, and if specified, the repository's configuration will be merged on top of the global configuration. This means that includes, actions, and labels in the repository configuration will be appended to what is set in the global configuration.</p>
 <h2 id="ignore_activity_from"><code>ignore_activity_from</code><a class="headerlink" href="#ignore_activity_from" title="Permanent link">&para;</a></h2>
 <div class="admonition question">
 <p class="admonition-title">What is 'activity'?</p>
