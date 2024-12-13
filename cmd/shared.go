@@ -110,21 +110,20 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 
 		file, err := client.MergeRequests().GetRemoteConfig(ctx, state.ConfigFilePath(ctx), configSourceRef)
 		if err != nil {
-			return fmt.Errorf("could not read remote config file: %w", err)
-		}
-
-		// Parse the file
-		cfg, err = config.ParseFile(file)
-		if err != nil {
-			return fmt.Errorf("could not parse config file: %w", err)
+			slogctx.Warn(ctx, "Could not read remote config file", slog.Any("error", err))
+		} else {
+			// Parse the file
+			cfg, err = config.ParseFile(file)
+			if err != nil { // error on parsing failures when present
+				return fmt.Errorf("could not parse config file: %w", err)
+			}
 		}
 	}
 
 	// Merge previously loaded config with Repository config
-	ctxConfig := config.FromContext(ctx) // the global config if previously loaded
-	if ctxConfig != nil && cfg != nil {
-		ctxConfig.Merge(cfg)
-		cfg = ctxConfig
+	globalConfig := config.GlobalConfigFromContext(ctx) // the global config if previously loaded
+	if globalConfig != nil && cfg != nil {
+		cfg = globalConfig.Merge(cfg)
 	}
 
 	// Sanity check for having a configuration loaded

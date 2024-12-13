@@ -111,10 +111,12 @@ func (c *Client) GetUser(ctx context.Context, userEntityRef *EntityReference) (*
 func (c *Client) ListGroupMembers(ctx context.Context, groupEntityRef *EntityReference) ([]go_backstage.Entity, error) {
 	var users []go_backstage.Entity
 
+	ref := groupEntityRef.ToString()
+
 	users, response, err := c.wrapped.Catalog.Entities.List(ctx, &backstage.ListEntityOptions{
 		Filters: []string{
 			// https://backstage.io/docs/features/software-catalog/well-known-relations/#memberof-and-hasmember
-			"kind=user,relations.memberof=" + groupEntityRef.ToString(),
+			"kind=user,relations.memberof=" + ref,
 		},
 	})
 	if err != nil {
@@ -220,6 +222,11 @@ func parseEntityReference(entityRef string) (*EntityReference, error) {
 	// default to the default namespace
 	if ref.Namespace == "" {
 		ref.Namespace = "default"
+	}
+
+	// default to group if kind is not set
+	if ref.Kind == "" {
+		ref.Kind = "group"
 	}
 
 	return ref, nil

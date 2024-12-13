@@ -44,21 +44,21 @@ func TestConfig_Merge(t *testing.T) {
 			cfg: &config.Config{
 				IgnoreActivityFrom: config.IgnoreActivityFrom{
 					IsBot:     false,
-					Usernames: []string{"user1"},
+					Usernames: []string{"user1", "user2"},
 					Emails:    []string{"user2@example.com"},
 				},
 			},
 			other: &config.Config{
 				IgnoreActivityFrom: config.IgnoreActivityFrom{
 					IsBot:     true,
-					Usernames: []string{"user3"},
+					Usernames: []string{"user3", "user2"},
 					Emails:    []string{"user4@example.com"},
 				},
 			},
 			want: &config.Config{
 				IgnoreActivityFrom: config.IgnoreActivityFrom{
 					IsBot:     true,
-					Usernames: []string{"user1", "user3"},
+					Usernames: []string{"user1", "user2", "user3"},
 					Emails:    []string{"user2@example.com", "user4@example.com"},
 				},
 			},
@@ -66,20 +66,20 @@ func TestConfig_Merge(t *testing.T) {
 		{
 			name: "merge actions",
 			cfg: &config.Config{
-				Actions: []config.Action{{Name: "action1"}},
+				Actions: []config.Action{{Name: "action1"}, {Name: "action2"}},
 			},
 			other: &config.Config{
-				Actions: []config.Action{{Name: "action2"}},
+				Actions: []config.Action{{Name: "action3"}, {Name: "action2"}},
 			},
-			want: &config.Config{Actions: []config.Action{{Name: "action1"}, {Name: "action2"}}},
+			want: &config.Config{Actions: []config.Action{{Name: "action1"}, {Name: "action2"}, {Name: "action3"}}},
 		},
 		{
 			name: "merge labels",
-			cfg:  &config.Config{Labels: config.Labels{{Name: "label1"}}},
+			cfg:  &config.Config{Labels: config.Labels{{Name: "label1"}, {Name: "label2"}}},
 			other: &config.Config{
-				Labels: config.Labels{{Name: "label2"}},
+				Labels: config.Labels{{Name: "label3"}, {Name: "label2"}},
 			},
-			want: &config.Config{Labels: config.Labels{{Name: "label1"}, {Name: "label2"}}},
+			want: &config.Config{Labels: config.Labels{{Name: "label1"}, {Name: "label2"}, {Name: "label3"}}},
 		},
 		{
 			name: "merge includes",
@@ -89,8 +89,7 @@ func TestConfig_Merge(t *testing.T) {
 			},
 			want: &config.Config{
 				Includes: []config.Include{
-					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1"}},
-					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file2"}},
+					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1", "file2"}},
 				},
 			},
 		},
@@ -100,8 +99,8 @@ func TestConfig_Merge(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.cfg.Merge(tt.other)
-			require.Equal(t, tt.want, tt.cfg)
+			got := tt.cfg.Merge(tt.other)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

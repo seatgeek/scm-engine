@@ -45,7 +45,7 @@ func Server(cCtx *cli.Context) error {
 			return err
 		}
 
-		ctx = config.WithConfig(ctx, globalCfg)
+		ctx = config.WithGlobalConfig(ctx, globalCfg)
 	}
 
 	//
