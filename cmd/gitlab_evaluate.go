@@ -16,10 +16,23 @@ func Evaluate(cCtx *cli.Context) error {
 	ctx = state.WithProjectID(ctx, cCtx.String(FlagSCMProject))
 	ctx = state.WithToken(ctx, cCtx.String(FlagAPIToken))
 	ctx = state.WithUpdatePipeline(ctx, cCtx.Bool(FlagUpdatePipeline), cCtx.String(FlagUpdatePipelineURL))
+	ctx = state.WithGlobalConfigFilePath(ctx, cCtx.String(FlagGlobalConfigFile))
 
 	// Optional Backstage catalog integration
 	ctx = state.WithBackstageURL(ctx, cCtx.String(FlagBackstageURL))
 	ctx = state.WithBackstageToken(ctx, cCtx.String(FlagBackstageToken))
+
+	//
+	// Setup global config if present
+	//
+	if state.GlobalConfigFilePath(ctx) != "" {
+		globalCfg, err := config.LoadFile(state.GlobalConfigFilePath(ctx))
+		if err != nil {
+			return err
+		}
+
+		ctx = config.WithConfig(ctx, globalCfg)
+	}
 
 	cfg, err := config.LoadFile(state.ConfigFilePath(ctx))
 	if err != nil {

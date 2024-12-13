@@ -120,6 +120,13 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 		}
 	}
 
+	// Merge previously loaded config with Repository config
+	ctxConfig := config.FromContext(ctx) // the global config if previously loaded
+	if ctxConfig != nil && cfg != nil {
+		ctxConfig.Merge(cfg)
+		cfg = ctxConfig
+	}
+
 	// Sanity check for having a configuration loaded
 	if cfg == nil {
 		return errors.New("cfg==nil; this is unexpected an error, please report!")
@@ -143,6 +150,7 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 	}
 
 	// Write the config to context so we can pull it out later
+	// If a global config file was set, this overrides the global config with the merged global and repository config
 	ctx = config.WithConfig(ctx, cfg)
 
 	//
