@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/jippi/scm-engine/pkg/scm"
@@ -174,51 +173,77 @@ func (c *Config) Merge(other *Config) *Config {
 	}
 
 	// Merge includes, but skip adding duplicate files under a project/ref
+	// The ordering of the Includes matters, so preserve the ordering where
+	// the c.Includes will be evaluated before the other.Includes in their
+	// set order.
+	//
+	// The end result decomposes the includes to a single include per project/ref
+	// and file, rather than joining files to a single project/ref.
 	if c.Includes != nil || other.Includes != nil {
-		includes := map[string]map[string]*bool{}
+		includesMap := map[string]map[string]*bool{} // to check if a file is already included
+		includesPos := map[string]int{}              // to know where to insert new includes
+
+		mergedIncludes := make([]Include, 0, len(c.Includes)+len(other.Includes))
 
 		for _, include := range c.Includes {
 			for _, file := range include.Files {
-				if _, ok := includes[key(include.Project, include.Ref)]; !ok {
-					includes[key(include.Project, include.Ref)] = map[string]*bool{}
+				// get the position of the project/ref in the mergedIncludes slice
+				pos, ok := includesPos[key(include.Project, include.Ref)]
+				if !ok {
+					// when it is not found we want to stick any new project/ref includes at the end
+					// of the mergedIncludes slice
+					includesMap[key(include.Project, include.Ref)] = map[string]*bool{}
+
+					pos = len(mergedIncludes) // start from the end of the mergedIncludes slice
+					includesPos[key(include.Project, include.Ref)] = pos
+
+					mergedIncludes = append(mergedIncludes, Include{
+						Project: include.Project,
+						Ref:     include.Ref,
+						Files:   []string{},
+					})
 				}
 
-				includes[key(include.Project, include.Ref)][file] = nil
+				// if the file is not already included, add it to the includesMap
+				// and add it to the mergedIncludes slice at the correct position
+				if _, ok := includesMap[key(include.Project, include.Ref)][file]; !ok {
+					includesMap[key(include.Project, include.Ref)][file] = nil // track that the file is included
+
+					mergedIncludes[pos].Files = append(mergedIncludes[pos].Files, file)
+				}
 			}
 		}
 
 		for _, include := range other.Includes {
 			for _, file := range include.Files {
-				if _, ok := includes[key(include.Project, include.Ref)]; !ok {
-					includes[key(include.Project, include.Ref)] = map[string]*bool{}
+				// get the position of the project/ref in the mergedIncludes slice
+				pos, ok := includesPos[key(include.Project, include.Ref)]
+				if !ok {
+					// when it is not found we want to stick any new project/ref includes at the end
+					// of the mergedIncludes slice
+					includesMap[key(include.Project, include.Ref)] = map[string]*bool{}
+
+					pos = len(mergedIncludes) // start from the end of the mergedIncludes slice
+					includesPos[key(include.Project, include.Ref)] = pos
+
+					mergedIncludes = append(mergedIncludes, Include{
+						Project: include.Project,
+						Ref:     include.Ref,
+						Files:   []string{},
+					})
 				}
 
-				includes[key(include.Project, include.Ref)][file] = nil
+				// if the file is not already included, add it to the includesMap
+				// and add it to the mergedIncludes slice at the correct position
+				if _, ok := includesMap[key(include.Project, include.Ref)][file]; !ok {
+					includesMap[key(include.Project, include.Ref)][file] = nil // track that the file is included
+
+					mergedIncludes[pos].Files = append(mergedIncludes[pos].Files, file)
+				}
 			}
 		}
 
-		cfg.Includes = make([]Include, 0, len(includes))
-
-		for key, fileMap := range includes {
-			keyParts := strings.Split(key, ":")
-			project := keyParts[0]
-
-			var ref *string
-			if refStr := keyParts[1]; refStr != "" {
-				ref = scm.Ptr(refStr)
-			}
-
-			files := make([]string, 0, len(fileMap))
-			for file := range fileMap {
-				files = append(files, file)
-			}
-
-			cfg.Includes = append(cfg.Includes, Include{
-				Project: project,
-				Ref:     ref,
-				Files:   files,
-			})
-		}
+		cfg.Includes = mergedIncludes
 	}
 
 	return cfg

@@ -83,13 +83,13 @@ func TestConfig_Merge(t *testing.T) {
 		},
 		{
 			name: "merge includes",
-			cfg:  &config.Config{Includes: []config.Include{{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1"}}}},
+			cfg:  &config.Config{Includes: []config.Include{{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1", "file3", "file4"}}}},
 			other: &config.Config{
-				Includes: []config.Include{{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file2"}}},
+				Includes: []config.Include{{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file2", "file4"}}},
 			},
 			want: &config.Config{
 				Includes: []config.Include{
-					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1", "file2"}},
+					{Project: "project1", Ref: scm.Ptr("ref1"), Files: []string{"file1", "file3", "file4", "file2"}},
 				},
 			},
 		},
