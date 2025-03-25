@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"reflect"
+	"slices"
 	"time"
 
 	"github.com/jippi/scm-engine/pkg/config"
@@ -184,10 +185,12 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 		remove scm.LabelOptions
 	)
 
+	existingLabels := evalContext.GetLabels()
+
 	for _, e := range labels {
-		if e.Matched {
+		if e.Matched && !slices.Contains(existingLabels, e.Name) {
 			add = append(add, e.Name)
-		} else {
+		} else if !e.Matched && slices.Contains(existingLabels, e.Name) {
 			remove = append(remove, e.Name)
 		}
 	}

@@ -91,6 +91,16 @@ func (c *evalContextMock) GetAuthor() scm.Actor {
 	return scm.Actor{}
 }
 
+func (c *evalContextMock) GetLabels() []string {
+	args := c.Called()
+
+	if labels, ok := args.Get(0).([]string); ok {
+		return labels
+	}
+
+	return nil
+}
+
 func TestAssignReviewers_codeowners(t *testing.T) {
 	t.Parallel()
 
