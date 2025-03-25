@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/jippi/scm-engine/pkg/config"
@@ -195,9 +196,14 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 	// Post-evaluation sync of actions
 	//
 
-	update := &scm.UpdateMergeRequestOptions{
-		AddLabels:    &add,
-		RemoveLabels: &remove,
+	update := &scm.UpdateMergeRequestOptions{}
+
+	if len(add) > 0 {
+		update.AddLabels = &add
+	}
+
+	if len(remove) > 0 {
+		update.RemoveLabels = &remove
 	}
 
 	slogctx.Info(ctx, "Applying actions")
@@ -216,6 +222,12 @@ func ProcessMR(ctx context.Context, client scm.Client, cfg *config.Config, event
 }
 
 func updateMergeRequest(ctx context.Context, client scm.Client, update *scm.UpdateMergeRequestOptions) error {
+	if update == nil || reflect.DeepEqual(update, &scm.UpdateMergeRequestOptions{}) {
+		slogctx.Info(ctx, "No changes to apply to Merge Request")
+
+		return nil
+	}
+
 	if state.IsDryRun(ctx) {
 		slogctx.Info(ctx, "In dry-run, dumping the update struct we would send to GitLab", slog.Any("changes", update))
 
