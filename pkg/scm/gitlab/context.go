@@ -214,3 +214,12 @@ func (c *Context) GetReviewers() scm.Actors {
 func (c *Context) GetAuthor() scm.Actor {
 	return c.MergeRequest.Author.ToActor()
 }
+
+func (c *Context) GetLabels() []string {
+	labels := make([]string, len(c.MergeRequest.Labels))
+	for i, label := range c.MergeRequest.Labels {
+		labels[i] = label.Title
+	}
+
+	return labels
+}

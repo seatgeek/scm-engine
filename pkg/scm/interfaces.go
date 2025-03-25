@@ -40,6 +40,7 @@ type EvalContext interface {
 	GetCodeOwners() Actors
 	GetReviewers() Actors
 	GetAuthor() Actor
+	GetLabels() []string
 }
 
 type ActionStep interface {

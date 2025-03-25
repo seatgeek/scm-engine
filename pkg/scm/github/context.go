@@ -128,3 +128,13 @@ func (c *Context) GetAuthor() scm.Actor {
 	// unimplemented
 	return scm.Actor{}
 }
+
+func (c *Context) GetLabels() []string {
+	labels := make([]string, 0, len(c.PullRequest.Labels))
+
+	for _, label := range c.PullRequest.Labels {
+		labels = append(labels, label.Name)
+	}
+
+	return labels
+}
