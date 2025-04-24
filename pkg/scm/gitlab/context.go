@@ -70,23 +70,23 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	evalContext.MergeRequest.Notes = evalContext.MergeRequest.ResponseNotes.Nodes
 	evalContext.MergeRequest.ResponseNotes.Nodes = nil
 
-	if len(evalContext.MergeRequest.ResponseFirstCommits.Nodes) > 0 {
-		evalContext.MergeRequest.FirstCommit = &evalContext.MergeRequest.ResponseFirstCommits.Nodes[0]
+	if len(evalContext.MergeRequest.ResponseOldestCommits.Nodes) > 0 {
+		evalContext.MergeRequest.FirstCommit = &evalContext.MergeRequest.ResponseOldestCommits.Nodes[0]
 
 		tmp := time.Since(*evalContext.MergeRequest.FirstCommit.CommittedDate)
 		evalContext.MergeRequest.TimeSinceFirstCommit = &tmp
 	}
 
-	evalContext.MergeRequest.ResponseFirstCommits = nil
+	evalContext.MergeRequest.ResponseOldestCommits = nil
 
-	if len(evalContext.MergeRequest.ResponseLastCommits.Nodes) > 0 {
-		evalContext.MergeRequest.LastCommit = &evalContext.MergeRequest.ResponseLastCommits.Nodes[0]
+	if len(evalContext.MergeRequest.ResponseNewestCommits.Nodes) > 0 {
+		evalContext.MergeRequest.LastCommit = &evalContext.MergeRequest.ResponseNewestCommits.Nodes[0]
 
 		tmp := time.Since(*evalContext.MergeRequest.LastCommit.CommittedDate)
 		evalContext.MergeRequest.TimeSinceLastCommit = &tmp
 	}
 
-	evalContext.MergeRequest.ResponseLastCommits = nil
+	evalContext.MergeRequest.ResponseNewestCommits = nil
 
 	if evalContext.MergeRequest.FirstCommit != nil && evalContext.MergeRequest.LastCommit != nil {
 		tmp := evalContext.MergeRequest.FirstCommit.CommittedDate.Sub(*evalContext.MergeRequest.LastCommit.CommittedDate).Round(time.Hour)
