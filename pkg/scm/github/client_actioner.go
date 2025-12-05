@@ -87,6 +87,14 @@ func (c *Client) ApplyStep(ctx context.Context, evalContext scm.EvalContext, upd
 
 		return err
 
+	case "assign_reviewer":
+		userID, err := step.RequiredInt("user_id")
+		if err != nil {
+			return err
+		}
+
+		update.AppendReviewerIDs([]int{userID})
+
 	case "comment":
 		msg, err := step.RequiredString("message")
 		if err != nil {
@@ -110,7 +118,7 @@ func (c *Client) ApplyStep(ctx context.Context, evalContext scm.EvalContext, upd
 		return err
 
 	default:
-		return fmt.Errorf("GitLab client does not know how to apply action %q", action)
+		return fmt.Errorf("GitHub client does not know how to apply action %q", action)
 	}
 
 	return nil

@@ -16,6 +16,7 @@ type actionList struct {
 var actions = []actionList{
 	{name: "add_label", instance: AddLabelAction{}},
 	{name: "approve", instance: ApproveAction{}},
+	{name: "assign_reviewer", instance: AssignReviewerAction{}},
 	{name: "assign_reviewers", instance: AssignReviewers{}},
 	{name: "close", instance: CloseAction{}},
 	{name: "comment", instance: CommentAction{}},
@@ -82,6 +83,15 @@ type AssignReviewers struct {
 	Limit int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	// The mode of assigning reviewers
 	Mode string `json:"mode,omitempty" yaml:"mode,omitempty" jsonschema:"enum=random"`
+}
+
+type AssignReviewerAction struct {
+	BaseAction
+
+	// The user ID of the reviewer to assign.
+	//
+	// See: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action
+	UserID int `json:"user_id" yaml:"user_id"`
 }
 
 type AddLabelAction struct {
