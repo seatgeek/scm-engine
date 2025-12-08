@@ -199,7 +199,7 @@ func TestAssignReviewers_codeowners(t *testing.T) {
 			update := &scm.UpdateMergeRequestOptions{}
 			step := tt.step
 
-			ctx := state.WithDryRun(context.Background(), false)
+			ctx := state.WithDryRun(t.Context(), false)
 			ctx = state.WithRandomSeed(ctx, 1)
 
 			err := client.AssignReviewers(ctx, evalContext, update, step)
@@ -296,7 +296,7 @@ func TestAssignReviewers_static(t *testing.T) {
 			client := &gitlab.Client{}
 			update := &scm.UpdateMergeRequestOptions{}
 
-			ctx := state.WithDryRun(context.Background(), false)
+			ctx := state.WithDryRun(t.Context(), false)
 			ctx = state.WithRandomSeed(ctx, 1)
 
 			err := client.AssignReviewers(ctx, evalContext, update, tt.step)
@@ -343,7 +343,7 @@ func TestAssignReviewers_backstage(t *testing.T) {
 			evalContext.On("GetAuthor").Return(scm.Actor{ID: "1", Username: "user1"})
 			evalContext.On("GetReviewers").Return(tt.mockGetReviewersResponse)
 
-			ctx := state.WithDryRun(context.Background(), false)
+			ctx := state.WithDryRun(t.Context(), false)
 			ctx = state.WithBaseURL(ctx, "https://gitlab.example.com")
 			ctx = state.WithToken(ctx, "token")
 			ctx = state.WithProjectID(ctx, "group/test-system")
