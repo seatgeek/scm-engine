@@ -2,7 +2,7 @@ module github.com/jippi/scm-engine
 
 go 1.24.0
 
-toolchain go1.24.1
+toolchain go1.24.11
 
 require (
 	github.com/99designs/gqlgen v0.17.84
