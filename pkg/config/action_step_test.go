@@ -8,32 +8,32 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestActionStep_RequiredIntSlice(t *testing.T) {
+func TestActionStep_RequiredStringSlice(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name    string
 		step    config.ActionStep
 		key     string
-		want    []int
+		want    []string
 		wantErr string
 	}{
 		{
 			name: "returns slice when key exists with valid value",
 			step: config.ActionStep{
-				"user_ids": []int{1, 2, 3},
+				"user_ids": []string{"1", "2", "3"},
 			},
 			key:     "user_ids",
-			want:    []int{1, 2, 3},
+			want:    []string{"1", "2", "3"},
 			wantErr: "",
 		},
 		{
 			name: "returns empty slice when key exists with empty slice",
 			step: config.ActionStep{
-				"user_ids": []int{},
+				"user_ids": []string{},
 			},
 			key:     "user_ids",
-			want:    []int{},
+			want:    []string{},
 			wantErr: "",
 		},
 		{
@@ -50,7 +50,7 @@ func TestActionStep_RequiredIntSlice(t *testing.T) {
 			},
 			key:     "user_ids",
 			want:    nil,
-			wantErr: "Required 'step' key 'user_ids' must be of type []int, got string",
+			wantErr: "Required 'step' key 'user_ids' must be of type []string, got string",
 		},
 		{
 			name: "returns error when value is wrong type (int)",
@@ -59,7 +59,7 @@ func TestActionStep_RequiredIntSlice(t *testing.T) {
 			},
 			key:     "user_ids",
 			want:    nil,
-			wantErr: "Required 'step' key 'user_ids' must be of type []int, got int",
+			wantErr: "Required 'step' key 'user_ids' must be of type []string, got int",
 		},
 	}
 
@@ -67,7 +67,7 @@ func TestActionStep_RequiredIntSlice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := tt.step.RequiredIntSlice(tt.key)
+			got, err := tt.step.RequiredStringSlice(tt.key)
 
 			if tt.wantErr != "" {
 				require.EqualError(t, err, tt.wantErr)

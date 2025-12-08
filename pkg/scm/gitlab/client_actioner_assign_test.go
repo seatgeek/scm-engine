@@ -229,7 +229,7 @@ func TestAssignReviewers_static(t *testing.T) {
 			name: "should assign static user ids",
 			step: config.ActionStep{
 				"source":   "static",
-				"user_ids": []int{100, 200, 300},
+				"user_ids": []string{"100", "200", "300"},
 				"limit":    2,
 			},
 			mockGetReviewersResponse: nil,
@@ -242,7 +242,7 @@ func TestAssignReviewers_static(t *testing.T) {
 			name: "should assign all static user ids when limit exceeds count",
 			step: config.ActionStep{
 				"source":   "static",
-				"user_ids": []int{100, 200},
+				"user_ids": []string{"100", "200"},
 				"limit":    5,
 			},
 			mockGetReviewersResponse: nil,
@@ -264,7 +264,7 @@ func TestAssignReviewers_static(t *testing.T) {
 			name: "should not assign if reviewers already exist",
 			step: config.ActionStep{
 				"source":   "static",
-				"user_ids": []int{100, 200},
+				"user_ids": []string{"100", "200"},
 			},
 			mockGetReviewersResponse: scm.Actors{
 				{ID: "50", Username: "existing"},
@@ -276,7 +276,7 @@ func TestAssignReviewers_static(t *testing.T) {
 			name: "should assign single user with default limit",
 			step: config.ActionStep{
 				"source":   "static",
-				"user_ids": []int{100, 200, 300},
+				"user_ids": []string{"100", "200", "300"},
 			},
 			mockGetReviewersResponse: nil,
 			wantUpdate: &scm.UpdateMergeRequestOptions{

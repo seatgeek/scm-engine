@@ -45,9 +45,9 @@ type EvalContext interface {
 
 type ActionStep interface {
 	RequiredInt(name string) (int, error)
-	RequiredIntSlice(name string) ([]int, error)
 	RequiredString(name string) (string, error)
 	RequiredStringEnum(name string, values ...string) (string, error)
+	RequiredStringSlice(name string) ([]string, error)
 	OptionalInt(name string, fallback int) (int, error)
 	OptionalString(name, fallback string) (string, error)
 	OptionalStringEnum(name string, fallback string, values ...string) (string, error)

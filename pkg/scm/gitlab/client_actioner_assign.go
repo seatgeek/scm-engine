@@ -67,13 +67,13 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 
 		break
 	case "static":
-		userIDs, err := step.RequiredIntSlice("user_ids")
+		userIDs, err := step.RequiredStringSlice("user_ids")
 		if err != nil {
 			return err
 		}
 
 		for _, id := range userIDs {
-			eligibleReviewers = append(eligibleReviewers, scm.Actor{ID: strconv.Itoa(id)})
+			eligibleReviewers = append(eligibleReviewers, scm.Actor{ID: id})
 		}
 
 		break
