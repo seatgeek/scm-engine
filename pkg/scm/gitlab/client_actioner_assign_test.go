@@ -199,7 +199,7 @@ func TestAssignReviewers_codeowners(t *testing.T) {
 			update := &scm.UpdateMergeRequestOptions{}
 			step := tt.step
 
-			ctx := state.WithDryRun(context.Background(), false)
+			ctx := state.WithDryRun(t.Context(), false)
 			ctx = state.WithRandomSeed(ctx, 1)
 
 			err := client.AssignReviewers(ctx, evalContext, update, step)
@@ -208,6 +208,104 @@ func TestAssignReviewers_codeowners(t *testing.T) {
 
 			if tt.wantUpdate.ReviewerIDs != nil {
 				wantLimit := len(*tt.wantUpdate.ReviewerIDs)
+				assert.Len(t, *update.ReviewerIDs, wantLimit)
+				assert.EqualValues(t, tt.wantUpdate.ReviewerIDs, update.ReviewerIDs)
+			}
+		})
+	}
+}
+
+func TestAssignReviewers_static(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name                     string
+		step                     config.ActionStep
+		mockGetReviewersResponse scm.Actors
+		wantUpdate               *scm.UpdateMergeRequestOptions
+		wantErr                  error
+	}{
+		{
+			name: "should assign static user ids",
+			step: config.ActionStep{
+				"source":   "static",
+				"user_ids": []string{"100", "200", "300"},
+				"limit":    2,
+			},
+			mockGetReviewersResponse: nil,
+			wantUpdate: &scm.UpdateMergeRequestOptions{
+				ReviewerIDs: scm.Ptr([]int{100, 200}),
+			},
+			wantErr: nil,
+		},
+		{
+			name: "should assign all static user ids when limit exceeds count",
+			step: config.ActionStep{
+				"source":   "static",
+				"user_ids": []string{"100", "200"},
+				"limit":    5,
+			},
+			mockGetReviewersResponse: nil,
+			wantUpdate: &scm.UpdateMergeRequestOptions{
+				ReviewerIDs: scm.Ptr([]int{100, 200}),
+			},
+			wantErr: nil,
+		},
+		{
+			name: "should error when user_ids is missing for static source",
+			step: config.ActionStep{
+				"source": "static",
+			},
+			mockGetReviewersResponse: nil,
+			wantUpdate:               &scm.UpdateMergeRequestOptions{},
+			wantErr:                  errors.New("Required 'step' key 'user_ids' is missing"),
+		},
+		{
+			name: "should not assign if reviewers already exist",
+			step: config.ActionStep{
+				"source":   "static",
+				"user_ids": []string{"100", "200"},
+			},
+			mockGetReviewersResponse: scm.Actors{
+				{ID: "50", Username: "existing"},
+			},
+			wantUpdate: &scm.UpdateMergeRequestOptions{},
+			wantErr:    nil,
+		},
+		{
+			name: "should assign single user with default limit",
+			step: config.ActionStep{
+				"source":   "static",
+				"user_ids": []string{"100", "200", "300"},
+			},
+			mockGetReviewersResponse: nil,
+			wantUpdate: &scm.UpdateMergeRequestOptions{
+				ReviewerIDs: scm.Ptr([]int{100}),
+			},
+			wantErr: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			evalContext := new(evalContextMock)
+			evalContext.On("GetReviewers").Return(tt.mockGetReviewersResponse)
+
+			client := &gitlab.Client{}
+			update := &scm.UpdateMergeRequestOptions{}
+
+			ctx := state.WithDryRun(t.Context(), false)
+			ctx = state.WithRandomSeed(ctx, 1)
+
+			err := client.AssignReviewers(ctx, evalContext, update, tt.step)
+
+			assert.Equal(t, tt.wantErr, err)
+
+			if tt.wantUpdate.ReviewerIDs != nil {
+				wantLimit := len(*tt.wantUpdate.ReviewerIDs)
+				require.NotNil(t, update.ReviewerIDs)
 				assert.Len(t, *update.ReviewerIDs, wantLimit)
 				assert.EqualValues(t, tt.wantUpdate.ReviewerIDs, update.ReviewerIDs)
 			}
@@ -245,7 +343,7 @@ func TestAssignReviewers_backstage(t *testing.T) {
 			evalContext.On("GetAuthor").Return(scm.Actor{ID: "1", Username: "user1"})
 			evalContext.On("GetReviewers").Return(tt.mockGetReviewersResponse)
 
-			ctx := state.WithDryRun(context.Background(), false)
+			ctx := state.WithDryRun(t.Context(), false)
 			ctx = state.WithBaseURL(ctx, "https://gitlab.example.com")
 			ctx = state.WithToken(ctx, "token")
 			ctx = state.WithProjectID(ctx, "group/test-system")

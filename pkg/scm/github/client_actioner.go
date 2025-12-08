@@ -110,7 +110,7 @@ func (c *Client) ApplyStep(ctx context.Context, evalContext scm.EvalContext, upd
 		return err
 
 	default:
-		return fmt.Errorf("GitLab client does not know how to apply action %q", action)
+		return fmt.Errorf("GitHub client does not know how to apply action %q", action)
 	}
 
 	return nil

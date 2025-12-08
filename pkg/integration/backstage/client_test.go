@@ -1,7 +1,6 @@
 package backstage_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -46,10 +45,10 @@ func TestClient_GetEntityOwner(t *testing.T) {
 			r := testutils.GetRecorder(t)
 			defer r.Stop()
 
-			client, err := backstage.NewClient(context.Background(), "https://backstage.example.com", "", r.GetDefaultClient())
+			client, err := backstage.NewClient(t.Context(), "https://backstage.example.com", "", r.GetDefaultClient())
 			require.NoError(t, err)
 
-			entityRef, err := client.GetEntityOwner(context.Background(), tt.filters...)
+			entityRef, err := client.GetEntityOwner(t.Context(), tt.filters...)
 			if tt.wantErr != nil {
 				require.Error(t, err)
 				assert.ErrorContains(t, tt.wantErr, err.Error())
@@ -108,10 +107,10 @@ func TestClient_GetUser(t *testing.T) {
 			r := testutils.GetRecorder(t)
 			defer r.Stop()
 
-			client, err := backstage.NewClient(context.Background(), "https://backstage.example.com", "", r.GetDefaultClient())
+			client, err := backstage.NewClient(t.Context(), "https://backstage.example.com", "", r.GetDefaultClient())
 			require.NoError(t, err)
 
-			user, err := client.GetUser(context.Background(), tt.arg)
+			user, err := client.GetUser(t.Context(), tt.arg)
 			if tt.wantErr != nil {
 				require.Error(t, err)
 				assert.ErrorContains(t, tt.wantErr, err.Error())
@@ -181,10 +180,10 @@ func TestClient_ListGroupMembers(t *testing.T) {
 			r := testutils.GetRecorder(t)
 			defer r.Stop()
 
-			client, err := backstage.NewClient(context.Background(), "https://backstage.example.com", "", r.GetDefaultClient())
+			client, err := backstage.NewClient(t.Context(), "https://backstage.example.com", "", r.GetDefaultClient())
 			require.NoError(t, err)
 
-			members, err := client.ListGroupMembers(context.Background(), tt.arg)
+			members, err := client.ListGroupMembers(t.Context(), tt.arg)
 			if tt.wantErr != nil {
 				require.Error(t, err)
 				assert.ErrorContains(t, tt.wantErr, err.Error())
@@ -225,10 +224,10 @@ func TestClient_GetOwnersForGitLabProject(t *testing.T) {
 			r := testutils.GetRecorder(t)
 			defer r.Stop()
 
-			client, err := backstage.NewClient(context.Background(), "https://backstage.example.com", "", r.GetDefaultClient())
+			client, err := backstage.NewClient(t.Context(), "https://backstage.example.com", "", r.GetDefaultClient())
 			require.NoError(t, err)
 
-			owners, err := client.GetOwnersForGitLabProject(context.Background(), tt.arg)
+			owners, err := client.GetOwnersForGitLabProject(t.Context(), tt.arg)
 			if tt.wantErr != nil {
 				require.Error(t, err)
 				assert.ErrorContains(t, tt.wantErr, err.Error())
