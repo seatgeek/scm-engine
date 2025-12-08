@@ -279,7 +279,7 @@ func (e ContextMergeRequest) TotalLinesAdded() int {
 	return total
 }
 
-func (e ContextMergeRequest) TotalLinesRemoved() int {
+func (e ContextMergeRequest) TotalLinesDeleted() int {
 	total := 0
 	for _, f := range e.DiffStats {
 		total += f.Deletions

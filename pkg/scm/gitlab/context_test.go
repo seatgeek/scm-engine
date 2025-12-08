@@ -152,7 +152,7 @@ func TestTotalLinesAdded(t *testing.T) {
 	}
 }
 
-func TestTotalLinesRemoved(t *testing.T) {
+func TestTotalLinesDeleted(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -201,9 +201,8 @@ func TestTotalLinesRemoved(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := tt.mr.TotalLinesRemoved()
+			result := tt.mr.TotalLinesDeleted()
 			require.Equal(t, tt.expected, result)
 		})
 	}
 }
-
