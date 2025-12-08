@@ -249,9 +249,9 @@ actions:
       - action: assign_reviewers
         source: static
         user_ids:
-          - 123
-          - 456
-          - 789
+          - "123"
+          - "456"
+          - "789"
         limit: 2
         mode: random
 ```
