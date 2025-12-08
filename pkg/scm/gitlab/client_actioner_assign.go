@@ -11,7 +11,7 @@ import (
 )
 
 func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContext, update *scm.UpdateMergeRequestOptions, step scm.ActionStep) error {
-	source, err := step.RequiredStringEnum("source", "codeowners", "backstage")
+	source, err := step.RequiredStringEnum("source", "codeowners", "backstage", "static")
 	if err != nil {
 		return err
 	}
@@ -63,6 +63,17 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 			if authorID != owner.ID {
 				eligibleReviewers = append(eligibleReviewers, owner)
 			}
+		}
+
+		break
+	case "static":
+		userIDs, err := step.RequiredIntSlice("user_ids")
+		if err != nil {
+			return err
+		}
+
+		for _, id := range userIDs {
+			eligibleReviewers = append(eligibleReviewers, scm.Actor{ID: strconv.Itoa(id)})
 		}
 
 		break

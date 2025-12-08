@@ -16,7 +16,6 @@ type actionList struct {
 var actions = []actionList{
 	{name: "add_label", instance: AddLabelAction{}},
 	{name: "approve", instance: ApproveAction{}},
-	{name: "assign_reviewer", instance: AssignReviewerAction{}},
 	{name: "assign_reviewers", instance: AssignReviewers{}},
 	{name: "close", instance: CloseAction{}},
 	{name: "comment", instance: CommentAction{}},
@@ -78,7 +77,9 @@ type AssignReviewers struct {
 	BaseAction
 
 	// The source of the reviewers
-	Source string `json:"source" yaml:"source,omitempty" jsonschema:"enum=codeowners,enum=backstage"`
+	Source string `json:"source" yaml:"source,omitempty" jsonschema:"enum=codeowners,enum=backstage,enum=static"`
+	// The static user IDs set for source=static
+	UserIDs []int `json:"user_ids,omitempty" yaml:"user_ids,omitempty"`
 	// The max number of reviewers to assign
 	Limit int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	// The mode of assigning reviewers
@@ -183,6 +184,20 @@ func (step ActionStep) RequiredInt(name string) (int, error) {
 	}
 
 	return valueInt, nil
+}
+
+func (step ActionStep) RequiredIntSlice(name string) ([]int, error) {
+	value, ok := step[name]
+	if !ok {
+		return nil, fmt.Errorf("Required 'step' key '%s' is missing", name)
+	}
+
+	valueSlice, ok := value.([]int)
+	if !ok {
+		return nil, fmt.Errorf("Required 'step' key '%s' must be of type []int, got %T", name, value)
+	}
+
+	return valueSlice, nil
 }
 
 func (step ActionStep) RequiredString(name string) (string, error) {
