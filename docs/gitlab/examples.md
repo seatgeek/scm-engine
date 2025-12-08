@@ -231,3 +231,27 @@ actions:
         limit: 1
         mode: random
 ```
+
+## Assign reviewers from static user IDs
+
+The `static` source allows you to specify a fixed list of GitLab user IDs to assign as reviewers. This is useful when you want to assign specific users regardless of CODEOWNERS or Backstage configuration.
+
+You can find a user's numeric ID by visiting their GitLab profile page - the ID is shown in the URL or on the profile.
+
+```yaml
+# yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json
+
+actions:
+  - name: "assign"
+    if: |1
+        --8<-- "docs/gitlab/snippets/assign-merge-request/assign-if.expr"
+    then:
+      - action: assign_reviewers
+        source: static
+        user_ids:
+          - 123
+          - 456
+          - 789
+        limit: 2
+        mode: random
+```

@@ -86,15 +86,6 @@ type AssignReviewers struct {
 	Mode string `json:"mode,omitempty" yaml:"mode,omitempty" jsonschema:"enum=random"`
 }
 
-type AssignReviewerAction struct {
-	BaseAction
-
-	// The user ID of the reviewer to assign.
-	//
-	// See: https://jippi.github.io/scm-engine/configuration/#actions.if.then.action
-	UserID int `json:"user_id" yaml:"user_id"`
-}
-
 type AddLabelAction struct {
 	BaseAction
 
