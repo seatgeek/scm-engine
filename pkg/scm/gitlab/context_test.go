@@ -6,6 +6,7 @@ import (
 	"github.com/jippi/scm-engine/pkg/scm"
 	"github.com/jippi/scm-engine/pkg/scm/gitlab"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetCodeOwners(t *testing.T) {
@@ -95,3 +96,114 @@ func TestGetCodeOwners(t *testing.T) {
 		})
 	}
 }
+
+func TestTotalLinesAdded(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		mr       *gitlab.ContextMergeRequest
+		expected int
+	}{
+		{
+			name:     "Empty diff stats",
+			mr:       &gitlab.ContextMergeRequest{},
+			expected: 0,
+		},
+		{
+			name: "Single file with additions",
+			mr: &gitlab.ContextMergeRequest{
+				DiffStats: []gitlab.ContextDiffStat{
+					{Path: "file1.go", Additions: 10, Deletions: 5},
+				},
+			},
+			expected: 10,
+		},
+		{
+			name: "Multiple files",
+			mr: &gitlab.ContextMergeRequest{
+				DiffStats: []gitlab.ContextDiffStat{
+					{Path: "file1.go", Additions: 10, Deletions: 5},
+					{Path: "file2.go", Additions: 20, Deletions: 3},
+					{Path: "file3.go", Additions: 5, Deletions: 0},
+				},
+			},
+			expected: 35,
+		},
+		{
+			name: "Files with zero additions",
+			mr: &gitlab.ContextMergeRequest{
+				DiffStats: []gitlab.ContextDiffStat{
+					{Path: "file1.go", Additions: 0, Deletions: 10},
+					{Path: "file2.go", Additions: 0, Deletions: 5},
+				},
+			},
+			expected: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := tt.mr.TotalLinesAdded()
+			require.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestTotalLinesRemoved(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		mr       *gitlab.ContextMergeRequest
+		expected int
+	}{
+		{
+			name:     "Empty diff stats",
+			mr:       &gitlab.ContextMergeRequest{},
+			expected: 0,
+		},
+		{
+			name: "Single file with deletions",
+			mr: &gitlab.ContextMergeRequest{
+				DiffStats: []gitlab.ContextDiffStat{
+					{Path: "file1.go", Additions: 10, Deletions: 5},
+				},
+			},
+			expected: 5,
+		},
+		{
+			name: "Multiple files",
+			mr: &gitlab.ContextMergeRequest{
+				DiffStats: []gitlab.ContextDiffStat{
+					{Path: "file1.go", Additions: 10, Deletions: 5},
+					{Path: "file2.go", Additions: 20, Deletions: 3},
+					{Path: "file3.go", Additions: 5, Deletions: 12},
+				},
+			},
+			expected: 20,
+		},
+		{
+			name: "Files with zero deletions",
+			mr: &gitlab.ContextMergeRequest{
+				DiffStats: []gitlab.ContextDiffStat{
+					{Path: "file1.go", Additions: 10, Deletions: 0},
+					{Path: "file2.go", Additions: 5, Deletions: 0},
+				},
+			},
+			expected: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := tt.mr.TotalLinesRemoved()
+			require.Equal(t, tt.expected, result)
+		})
+	}
+}
+

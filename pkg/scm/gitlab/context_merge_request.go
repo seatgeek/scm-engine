@@ -288,10 +288,6 @@ func (e ContextMergeRequest) TotalLinesRemoved() int {
 	return total
 }
 
-func (e ContextMergeRequest) TotalLinesChanged() int {
-	return e.TotalLinesAdded() + e.TotalLinesRemoved()
-}
-
 func (e ContextMergeRequest) findModifiedFiles(patterns ...string) []string {
 	files := []string{}
 	for _, f := range e.DiffStats {
