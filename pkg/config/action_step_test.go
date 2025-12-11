@@ -61,6 +61,24 @@ func TestActionStep_RequiredStringSlice(t *testing.T) {
 			want:    nil,
 			wantErr: "Required 'step' key 'user_ids' must be of type []string, got int",
 		},
+		{
+			name: "returns slice when YAML provides []interface{} with string values",
+			step: config.ActionStep{
+				"user_ids": []interface{}{"2223", "4456"},
+			},
+			key:     "user_ids",
+			want:    []string{"2223", "4456"},
+			wantErr: "",
+		},
+		{
+			name: "returns error when []interface{} contains non-string values",
+			step: config.ActionStep{
+				"user_ids": []interface{}{"2223", 123},
+			},
+			key:     "user_ids",
+			want:    nil,
+			wantErr: "Required 'step' key 'user_ids' must be of type []string, but element at index 1 is int",
+		},
 	}
 
 	for _, tt := range tests {
