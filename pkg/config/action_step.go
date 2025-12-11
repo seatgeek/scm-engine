@@ -183,12 +183,29 @@ func (step ActionStep) RequiredStringSlice(name string) ([]string, error) {
 		return nil, fmt.Errorf("Required 'step' key '%s' is missing", name)
 	}
 
-	valueSlice, ok := value.([]string)
-	if !ok {
-		return nil, fmt.Errorf("Required 'step' key '%s' must be of type []string, got %T", name, value)
+	// Try direct []string assertion first
+	if valueSlice, ok := value.([]string); ok {
+		return valueSlice, nil
 	}
 
-	return valueSlice, nil
+	// YAML unmarshaling produces []interface{} instead of []string,
+	// so we need to convert it manually
+	if interfaceSlice, ok := value.([]interface{}); ok {
+		result := make([]string, len(interfaceSlice))
+
+		for i, v := range interfaceSlice {
+			str, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("Required 'step' key '%s' must be of type []string, but element at index %d is %T", name, i, v)
+			}
+
+			result[i] = str
+		}
+
+		return result, nil
+	}
+
+	return nil, fmt.Errorf("Required 'step' key '%s' must be of type []string, got %T", name, value)
 }
 
 func (step ActionStep) RequiredString(name string) (string, error) {
