@@ -22,3 +22,4 @@ func errHandler(ctx context.Context, w http.ResponseWriter, code int, err error)
 
 	return
 }
+

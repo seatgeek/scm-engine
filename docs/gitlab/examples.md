@@ -255,3 +255,134 @@ actions:
         limit: 2
         mode: random
 ```
+
+## React to Pipeline Status Changes
+
+Pipeline events are triggered when a pipeline's status changes (created, running, success, failed, etc.). This allows you to automatically add labels, comments, or perform other actions based on CI/CD results.
+
+!!! note "Enable Pipeline Webhooks"
+
+    To use pipeline events, enable "Pipeline events" in your GitLab project's webhook settings.
+    Pipeline events are only processed when they are associated with a merge request.
+
+### Add labels based on pipeline status
+
+```yaml
+# yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json
+
+label:
+  - name: "ci/passed"
+    color: $green
+    script: |
+      pipeline != nil
+      && pipeline.status == "SUCCESS"
+      && pipeline.source == "merge_request_event"
+
+  - name: "ci/failed"
+    color: $red
+    script: |
+      pipeline != nil
+      && pipeline.status == "FAILED"
+      && pipeline.source == "merge_request_event"
+
+  - name: "ci/running"
+    color: $yellow
+    script: |
+      pipeline != nil
+      && pipeline.status == "RUNNING"
+      && pipeline.source == "merge_request_event"
+```
+
+### Comment on failed pipeline with job details
+
+```yaml
+# yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json
+
+actions:
+  - name: "notify-pipeline-failure"
+    if: |
+      pipeline != nil
+      && pipeline.status == "FAILED"
+      && pipeline.source == "merge_request_event"
+      && pipeline.hasFailedJobs()
+    then:
+      - action: comment
+        message: |
+          :x: **Pipeline Failed**
+
+          The pipeline has failed. Please check the pipeline logs for more details.
+```
+
+### Label slow pipelines
+
+```yaml
+# yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json
+
+label:
+  - name: "ci/slow-pipeline"
+    color: $orange
+    description: "Pipeline took longer than 30 minutes"
+    script: |
+      pipeline != nil
+      && pipeline.status == "SUCCESS"
+      && pipeline.duration != nil
+      && pipeline.duration > 1800
+```
+
+### Pipeline Context Reference
+
+When handling pipeline events, the following fields are available in the `pipeline` object:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `pipeline.id` | string | Global ID of the pipeline |
+| `pipeline.iid` | string | Pipeline internal ID |
+| `pipeline.name` | string | Pipeline name |
+| `pipeline.ref` | string | Git ref (branch/tag) |
+| `pipeline.tag` | bool | Whether this is a tag pipeline |
+| `pipeline.sha` | string | Commit SHA |
+| `pipeline.source` | string | Pipeline source: `merge_request_event`, `push`, `web`, `api`, `trigger`, `schedule`, `pipeline` |
+| `pipeline.status` | string | Status: `CREATED`, `WAITING_FOR_RESOURCE`, `PREPARING`, `PENDING`, `RUNNING`, `SUCCESS`, `FAILED`, `CANCELED`, `SKIPPED`, `MANUAL`, `SCHEDULED` |
+| `pipeline.active` | bool | Whether the pipeline is active |
+| `pipeline.cancelable` | bool | Whether the pipeline can be canceled |
+| `pipeline.complete` | bool | Whether the pipeline is complete |
+| `pipeline.duration` | int | Duration in seconds (nil if not finished) |
+| `pipeline.failure_reason` | string | Reason for failure (if failed) |
+| `pipeline.finished_at` | time | Timestamp when pipeline finished |
+| `pipeline.latest` | bool | Whether this is the latest pipeline |
+| `pipeline.path` | string | Relative path to the pipeline's page |
+| `pipeline.retryable` | bool | Whether the pipeline can be retried |
+| `pipeline.started_at` | time | Timestamp when pipeline started |
+| `pipeline.stuck` | bool | Whether the pipeline is stuck |
+| `pipeline.total_jobs` | int | Total number of jobs in the pipeline |
+| `pipeline.updated_at` | time | Timestamp of last update |
+| `pipeline.warnings` | bool | Whether the pipeline has warnings |
+| `pipeline.jobs` | []Job | List of jobs in the pipeline |
+
+**Job fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `job.id` | string | Job ID |
+| `job.name` | string | Job name |
+| `job.status` | string | Job status |
+| `job.stage.name` | string | Stage name |
+| `job.ref` | string | Git ref for the job |
+| `job.duration` | int | Duration in seconds |
+| `job.active` | bool | Whether the job is active |
+| `job.allow_failure` | bool | Whether allowed to fail |
+| `job.manual_job` | bool | Whether this is a manual job |
+| `job.retried` | bool | Whether the job was retried |
+| `job.scheduled_at` | time | Scheduled start time |
+| `job.stuck` | bool | Whether the job is stuck |
+
+**Helper methods:**
+
+| Method | Description |
+|--------|-------------|
+| `pipeline.hasFailedJobs()` | Returns true if any job has status "failed" |
+
+!!! tip "Pipeline is nil for non-pipeline events"
+
+    Always check `pipeline != nil` in your scripts to ensure the expression only evaluates
+    for pipeline events. For merge request or note events, `pipeline` will be nil.

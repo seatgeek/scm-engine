@@ -28,15 +28,12 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	var (
 		evalContext *Context
 		variables   = map[string]any{
-			"project_id": graphql.ID(state.ProjectID(ctx)),
-			"mr_id":      state.MergeRequestID(ctx),
-			// TODO: add support for pipeline events here
-			// pipeline_id: state.PipelineID(ctx),
+			"project_id":  graphql.ID(state.ProjectID(ctx)),
+			"mr_id":       state.MergeRequestID(ctx),
+			"pipeline_id": state.PipelineID(ctx),
 		}
 	)
 
-	// TODO: query should be updated to pull `stages`, ids, status, detailed_status, other object attributes, `builds` array and `source_pipeline` into evalContext Pipeline field
-	// TODO: https://docs.gitlab.com/user/project/integrations/webhook_events/#pipeline-events
 	if err := client.Query(ctx, &evalContext, variables); err != nil {
 		return nil, err
 	}
@@ -70,6 +67,18 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 
 	evalContext.Group = evalContext.Project.ResponseGroup
 	evalContext.Project.ResponseGroup = nil
+
+	// Move pipeline from ResponsePipeline into the top-level Pipeline field
+	if evalContext.Project.ResponsePipeline != nil {
+		evalContext.Pipeline = evalContext.Project.ResponsePipeline
+		evalContext.Project.ResponsePipeline = nil
+
+		// Move pipeline jobs from ResponseJobs into the Jobs field
+		if evalContext.Pipeline.ResponseJobs != nil {
+			evalContext.Pipeline.Jobs = evalContext.Pipeline.ResponseJobs.Nodes
+			evalContext.Pipeline.ResponseJobs = nil
+		}
+	}
 
 	evalContext.MergeRequest.Notes = evalContext.MergeRequest.ResponseNotes.Nodes
 	evalContext.MergeRequest.ResponseNotes.Nodes = nil

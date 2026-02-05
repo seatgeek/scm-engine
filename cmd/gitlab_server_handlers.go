@@ -76,28 +76,36 @@ func GitLabWebhookHandler(ctx context.Context, webhookSecret string) http.Handle
 		// Initialize context
 		ctx = state.WithProjectID(ctx, payload.Project.PathWithNamespace)
 
+		// Determine effective event type - pipeline events don't send event_type, only object_kind
+		eventType := payload.EventType
+		if eventType == "" && payload.ObjectKind == "pipeline" {
+			eventType = "pipeline"
+		}
+
 		// Grab event specific information
 		var (
 			id         string
 			gitSha     string
-			pipelineId string
+			pipelineID string
 		)
 
-		switch payload.EventType {
+		switch eventType {
 		case "merge_request":
 			id = strconv.Itoa(payload.ObjectAttributes.IID)
-			gitSha = payload.ObjectAttributes.LastCommit.ID
-			pipelineId = "" // only handle set pipeline id for pipeline events
+			gitSha = payload.ObjectAttributes.GetCommitID()
 
 		case "note":
 			id = strconv.Itoa(payload.MergeRequest.IID)
-			gitSha = payload.MergeRequest.LastCommit.ID
-			pipelineId = ""
+			gitSha = payload.MergeRequest.GetCommitID()
 
-		// TODO: add support for pipeline events here, no event_type is sent for pipeline events so we should add our own when object_kind is "pipeline" before this
+		case "pipeline":
+			// For pipeline events, MR info is in merge_request field, SHA in commit or object_attributes
+			id = strconv.Itoa(payload.MergeRequest.IID)
+			gitSha = payload.ObjectAttributes.GetCommitID()
+			pipelineID = strconv.Itoa(payload.ObjectAttributes.IID)
 
 		default:
-			errHandler(ctx, w, http.StatusInternalServerError, fmt.Errorf("unknown event type: %s", payload.EventType))
+			errHandler(ctx, w, http.StatusInternalServerError, fmt.Errorf("unknown event type: %s (object_kind: %s)", payload.EventType, payload.ObjectKind))
 
 			return
 		}
@@ -105,9 +113,10 @@ func GitLabWebhookHandler(ctx context.Context, webhookSecret string) http.Handle
 		// Build context for rest of the pipeline
 		ctx = state.WithCommitSHA(ctx, gitSha)
 		ctx = state.WithMergeRequestID(ctx, id)
-		// TODO: set pipeline id here if event_type is "pipeline"
-		// pipeline_id: state.PipelineID(ctx),
-		ctx = slogctx.With(ctx, slog.String("event_type", payload.EventType))
+		if pipelineID != "" {
+			ctx = state.WithPipelineID(ctx, pipelineID)
+		}
+		ctx = slogctx.With(ctx, slog.String("event_type", eventType))
 
 		slogctx.Info(ctx, "GET /gitlab webhook")
 
