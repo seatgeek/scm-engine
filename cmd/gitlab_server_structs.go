@@ -3,14 +3,15 @@ package cmd
 type GitlabWebhookPayload struct {
 	EventType        string                            `json:"event_type"`
 	Project          GitlabWebhookPayloadProject       `json:"project"`                     // "project" is sent for all events
-	ObjectAttributes *GitlabWebhookPayloadMergeRequest `json:"object_attributes,omitempty"` // "object_attributes" is sent on "merge_request" events
-	MergeRequest     *GitlabWebhookPayloadMergeRequest `json:"merge_request,omitempty"`     // "merge_request" is sent on "note" activity
+	ObjectAttributes *GitlabWebhookPayloadMergeRequest `json:"object_attributes,omitempty"` // "object_attributes" is sent on "merge_request" events and "pipeline" events
+	MergeRequest     *GitlabWebhookPayloadMergeRequest `json:"merge_request,omitempty"`     // "merge_request" is sent on "note" activity and "pipeline" events
 }
 
 type GitlabWebhookPayloadProject struct {
 	PathWithNamespace string `json:"path_with_namespace"`
 }
 
+// TODO: handle for https://docs.gitlab.com/user/project/integrations/webhook_events/#pipeline-events, since last_commit is not sent on pipeline events, only sha
 type GitlabWebhookPayloadMergeRequest struct {
 	IID        int                        `json:"iid"`
 	LastCommit GitlabWebhookPayloadCommit `json:"last_commit"`

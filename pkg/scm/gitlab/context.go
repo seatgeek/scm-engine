@@ -30,9 +30,13 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 		variables   = map[string]any{
 			"project_id": graphql.ID(state.ProjectID(ctx)),
 			"mr_id":      state.MergeRequestID(ctx),
+			// TODO: add support for pipeline events here
+			// pipeline_id: state.PipelineID(ctx),
 		}
 	)
 
+	// TODO: query should be updated to pull `stages`, ids, status, detailed_status, other object attributes, `builds` array and `source_pipeline` into evalContext Pipeline field
+	// TODO: https://docs.gitlab.com/user/project/integrations/webhook_events/#pipeline-events
 	if err := client.Query(ctx, &evalContext, variables); err != nil {
 		return nil, err
 	}

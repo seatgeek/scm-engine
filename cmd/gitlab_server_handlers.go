@@ -78,18 +78,23 @@ func GitLabWebhookHandler(ctx context.Context, webhookSecret string) http.Handle
 
 		// Grab event specific information
 		var (
-			id     string
-			gitSha string
+			id         string
+			gitSha     string
+			pipelineId string
 		)
 
 		switch payload.EventType {
 		case "merge_request":
 			id = strconv.Itoa(payload.ObjectAttributes.IID)
 			gitSha = payload.ObjectAttributes.LastCommit.ID
+			pipelineId = "" // only handle set pipeline id for pipeline events
 
 		case "note":
 			id = strconv.Itoa(payload.MergeRequest.IID)
 			gitSha = payload.MergeRequest.LastCommit.ID
+			pipelineId = ""
+
+		// TODO: add support for pipeline events here, no event_type is sent for pipeline events so we should add our own when object_kind is "pipeline" before this
 
 		default:
 			errHandler(ctx, w, http.StatusInternalServerError, fmt.Errorf("unknown event type: %s", payload.EventType))
@@ -100,6 +105,8 @@ func GitLabWebhookHandler(ctx context.Context, webhookSecret string) http.Handle
 		// Build context for rest of the pipeline
 		ctx = state.WithCommitSHA(ctx, gitSha)
 		ctx = state.WithMergeRequestID(ctx, id)
+		// TODO: set pipeline id here if event_type is "pipeline"
+		// pipeline_id: state.PipelineID(ctx),
 		ctx = slogctx.With(ctx, slog.String("event_type", payload.EventType))
 
 		slogctx.Info(ctx, "GET /gitlab webhook")
