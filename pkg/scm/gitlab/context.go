@@ -75,7 +75,9 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	} else {
 		evalContext.Pipeline = evalContext.MergeRequest.HeadPipeline
 	}
+
 	evalContext.Project.ResponsePipeline = nil
+
 	if evalContext.Pipeline != nil && evalContext.Pipeline.ResponseJobs != nil {
 		evalContext.Pipeline.Jobs = evalContext.Pipeline.ResponseJobs.Nodes
 		evalContext.Pipeline.ResponseJobs = nil

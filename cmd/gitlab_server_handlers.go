@@ -113,9 +113,11 @@ func GitLabWebhookHandler(ctx context.Context, webhookSecret string) http.Handle
 		// Build context for rest of the pipeline
 		ctx = state.WithCommitSHA(ctx, gitSha)
 		ctx = state.WithMergeRequestID(ctx, id)
+
 		if pipelineID != "" {
 			ctx = state.WithPipelineID(ctx, pipelineID)
 		}
+
 		ctx = slogctx.With(ctx, slog.String("event_type", eventType))
 
 		slogctx.Info(ctx, "GET /gitlab webhook")

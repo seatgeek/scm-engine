@@ -22,9 +22,11 @@ func (o *GitlabWebhookPayloadObjectAttributes) GetCommitID() string {
 	if o == nil {
 		return ""
 	}
+
 	if o.LastCommit.ID != "" {
 		return o.LastCommit.ID
 	}
+
 	return o.Commit.ID
 }
 
@@ -37,6 +39,7 @@ func (m *GitlabWebhookPayloadMergeRequest) GetCommitID() string {
 	if m == nil {
 		return ""
 	}
+
 	return m.LastCommit.ID
 }
 
