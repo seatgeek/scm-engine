@@ -54,23 +54,23 @@ func NewContext(ctx context.Context, _, token string) (*Context, error) {
 	evalContext.PullRequest.Labels = evalContext.PullRequest.ResponseLabels.Nodes
 	evalContext.PullRequest.ResponseLabels = nil
 
-	if len(evalContext.PullRequest.ResponseOldestCommits.Nodes) > 0 {
-		evalContext.PullRequest.FirstCommit = evalContext.PullRequest.ResponseOldestCommits.Nodes[0].Commit
+	if evalContext.PullRequest.ResponseFirstCommits != nil && len(evalContext.PullRequest.ResponseFirstCommits.Nodes) > 0 {
+		evalContext.PullRequest.FirstCommit = evalContext.PullRequest.ResponseFirstCommits.Nodes[0].Commit
 
 		tmp := time.Since(evalContext.PullRequest.FirstCommit.CommittedDate)
 		evalContext.PullRequest.TimeSinceFirstCommit = &tmp
 	}
 
-	evalContext.PullRequest.ResponseOldestCommits = nil
+	evalContext.PullRequest.ResponseFirstCommits = nil
 
-	if len(evalContext.PullRequest.ResponseNewestCommits.Nodes) > 0 {
-		evalContext.PullRequest.LastCommit = evalContext.PullRequest.ResponseNewestCommits.Nodes[0].Commit
+	if evalContext.PullRequest.ResponseLastCommits != nil && len(evalContext.PullRequest.ResponseLastCommits.Nodes) > 0 {
+		evalContext.PullRequest.LastCommit = evalContext.PullRequest.ResponseLastCommits.Nodes[0].Commit
 
 		tmp := time.Since(evalContext.PullRequest.LastCommit.CommittedDate)
 		evalContext.PullRequest.TimeSinceLastCommit = &tmp
 	}
 
-	evalContext.PullRequest.ResponseNewestCommits = nil
+	evalContext.PullRequest.ResponseLastCommits = nil
 
 	if evalContext.PullRequest.FirstCommit != nil && evalContext.PullRequest.LastCommit != nil {
 		tmp := evalContext.PullRequest.FirstCommit.CommittedDate.Sub(evalContext.PullRequest.LastCommit.CommittedDate).Round(time.Hour)
