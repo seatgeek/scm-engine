@@ -301,10 +301,10 @@ label:
 actions:
   - name: "notify-pipeline-failure"
     if: |
-      pipeline != nil
-      && pipeline.status == "FAILED"
-      && pipeline.source == "merge_request_event"
-      && pipeline.hasFailedJobs()
+      webhook_event != nil
+      && webhook_event.object_kind == "pipeline"
+      && pipeline != nil
+      && pipeline.has_failed_jobs()
     then:
       - action: comment
         message: |
