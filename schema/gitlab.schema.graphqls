@@ -576,8 +576,6 @@ type ContextPipeline {
   Status: PipelineStatusEnum!
   "If the pipeline is stuck"
   Stuck: Boolean!
-  "Whether this pipeline ran on a tag"
-  Tag: Boolean!
   "The total number of jobs in the pipeline"
   TotalJobs: Int!
   "Timestamp of the pipeline's last activity"
@@ -608,8 +606,6 @@ type ContextPipelineJob {
   ManualJob: Boolean!
   "Name of the job"
   Name: String
-  "Ref (branch or tag) for the job"
-  Ref: String
   "Indicates that the job is retried"
   Retried: Boolean
   "Schedule for the build"
