@@ -22,3 +22,4 @@
 /scm-engine
 /scm-engine.exe
 scm-engine.schema.json
+.scm-engine.global.yml
