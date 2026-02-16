@@ -254,7 +254,7 @@ type ContextProject {
     @graphql(key: "mergeRequest(iid: $mr_id)")
   ResponsePipeline: ContextPipeline
     @internal
-    @graphql(key: "pipeline(iid: $pipeline_id)")
+    @graphql(key: "pipeline(iid: $pipeline_id) @include(if: $request_pipeline_by_id)")
   ResponseGroup: ContextGroup @internal @graphql(key: "group")
 }
 
@@ -379,6 +379,8 @@ type ContextMergeRequest {
   Labels: [ContextLabel!] @generated
   "Pipeline running on the branch HEAD of the merge request"
   HeadPipeline: ContextPipeline
+    @internal
+    @graphql(key: "headPipeline @skip(if: $request_pipeline_by_id)")
 
   #
   # scm-engine customs

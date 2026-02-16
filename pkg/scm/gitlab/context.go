@@ -28,9 +28,10 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	var (
 		evalContext *Context
 		variables   = map[string]any{
-			"project_id":  graphql.ID(state.ProjectID(ctx)),
-			"mr_id":       state.MergeRequestID(ctx),
-			"pipeline_id": graphql.ID(state.PipelineID(ctx)),
+			"project_id":             graphql.ID(state.ProjectID(ctx)),
+			"mr_id":                  state.MergeRequestID(ctx),
+			"pipeline_id":            graphql.ID(state.PipelineID(ctx)),
+			"request_pipeline_by_id": state.PipelineID(ctx) != "",
 		}
 	)
 
