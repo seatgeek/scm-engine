@@ -13,23 +13,6 @@ import (
 
 var _ scm.EvalContext = (*Context)(nil)
 
-// toContextPipeline converts the minimal pipeline (status + job statuses only) from the main query into ContextPipeline.
-func (m *ContextPipelineByID) toContextPipeline() *ContextPipeline {
-	if m == nil {
-		return nil
-	}
-	p := &ContextPipeline{
-		ID:     m.ID,
-		Iid:    m.Iid,
-		Status: m.Status,
-		Jobs:   nil,
-	}
-	if m.ResponseJobs != nil {
-		p.Jobs = m.ResponseJobs.Nodes
-	}
-	return p
-}
-
 func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	httpClient := oauth2.NewClient(
 		ctx,
@@ -85,10 +68,10 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	evalContext.Group = evalContext.Project.ResponseGroup
 	evalContext.Project.ResponseGroup = nil
 
-	// Set top-level Pipeline: for pipeline events use the pipeline queried by ID (minimal, no jobs);
+	// Set top-level Pipeline: for pipeline events use the pipeline queried by ID;
 	// for merge_request/note events use the MR's HeadPipeline.
 	if state.PipelineID(ctx) != "" && evalContext.Project.ResponsePipeline != nil {
-		evalContext.Pipeline = evalContext.Project.ResponsePipeline.toContextPipeline()
+		evalContext.Pipeline = evalContext.Project.ResponsePipeline
 	} else {
 		evalContext.Pipeline = evalContext.MergeRequest.HeadPipeline
 	}
@@ -101,23 +84,23 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	evalContext.MergeRequest.Notes = evalContext.MergeRequest.ResponseNotes.Nodes
 	evalContext.MergeRequest.ResponseNotes.Nodes = nil
 
-	if evalContext.MergeRequest.ResponseFirstCommits != nil && len(evalContext.MergeRequest.ResponseFirstCommits.Nodes) > 0 {
-		evalContext.MergeRequest.FirstCommit = &evalContext.MergeRequest.ResponseFirstCommits.Nodes[0]
+	if evalContext.MergeRequest.ResponseOldestCommits != nil && len(evalContext.MergeRequest.ResponseOldestCommits.Nodes) > 0 {
+		evalContext.MergeRequest.FirstCommit = &evalContext.MergeRequest.ResponseOldestCommits.Nodes[0]
 
 		tmp := time.Since(*evalContext.MergeRequest.FirstCommit.CommittedDate)
 		evalContext.MergeRequest.TimeSinceFirstCommit = &tmp
 	}
 
-	evalContext.MergeRequest.ResponseFirstCommits = nil
+	evalContext.MergeRequest.ResponseOldestCommits = nil
 
-	if evalContext.MergeRequest.ResponseLastCommits != nil && len(evalContext.MergeRequest.ResponseLastCommits.Nodes) > 0 {
-		evalContext.MergeRequest.LastCommit = &evalContext.MergeRequest.ResponseLastCommits.Nodes[0]
+	if evalContext.MergeRequest.ResponseNewestCommits != nil && len(evalContext.MergeRequest.ResponseNewestCommits.Nodes) > 0 {
+		evalContext.MergeRequest.LastCommit = &evalContext.MergeRequest.ResponseNewestCommits.Nodes[0]
 
 		tmp := time.Since(*evalContext.MergeRequest.LastCommit.CommittedDate)
 		evalContext.MergeRequest.TimeSinceLastCommit = &tmp
 	}
 
-	evalContext.MergeRequest.ResponseLastCommits = nil
+	evalContext.MergeRequest.ResponseNewestCommits = nil
 
 	if evalContext.MergeRequest.FirstCommit != nil && evalContext.MergeRequest.LastCommit != nil {
 		tmp := evalContext.MergeRequest.FirstCommit.CommittedDate.Sub(*evalContext.MergeRequest.LastCommit.CommittedDate).Round(time.Hour)
