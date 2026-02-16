@@ -2,7 +2,6 @@ package gitlab
 
 import (
 	"context"
-	"log/slog"
 	"time"
 
 	"github.com/hasura/go-graphql-client"
@@ -14,77 +13,21 @@ import (
 
 var _ scm.EvalContext = (*Context)(nil)
 
-// pipelineByIDResponse is used for a separate low-complexity query to fetch pipeline by ID (pipeline events only).
-// It requests only scalar pipeline fields (no jobs) to stay under GitLab's complexity limit.
-type pipelineByIDResponse struct {
-	Project *struct {
-		Pipeline *minimalPipelineForQuery `graphql:"pipeline(iid: $pipeline_id)"`
-	} `graphql:"project(fullPath: $project_id)"`
-}
-
-type minimalPipelineForQuery struct {
-	Active        bool               `graphql:"active"`
-	Cancelable    bool               `graphql:"cancelable"`
-	Complete      bool               `graphql:"complete"`
-	Duration      *int               `graphql:"duration"`
-	FailureReason *string            `graphql:"failureReason"`
-	FinishedAt    *time.Time         `graphql:"finishedAt"`
-	ID            string             `graphql:"id"`
-	Iid           string             `graphql:"iid"`
-	Latest        bool               `graphql:"latest"`
-	Name          *string            `graphql:"name"`
-	Path          *string            `graphql:"path"`
-	Retryable     bool               `graphql:"retryable"`
-	StartedAt     *time.Time         `graphql:"startedAt"`
-	Status        PipelineStatusEnum `graphql:"status"`
-	Stuck         bool               `graphql:"stuck"`
-	TotalJobs     int                `graphql:"totalJobs"`
-	UpdatedAt     time.Time          `graphql:"updatedAt"`
-	Warnings      bool               `graphql:"warnings"`
-}
-
-func (m *minimalPipelineForQuery) toContextPipeline() *ContextPipeline {
+// toContextPipeline converts the minimal pipeline (status + job statuses only) from the main query into ContextPipeline.
+func (m *ContextPipelineByID) toContextPipeline() *ContextPipeline {
 	if m == nil {
 		return nil
 	}
-	return &ContextPipeline{
-		Active:        m.Active,
-		Cancelable:    m.Cancelable,
-		Complete:      m.Complete,
-		Duration:      m.Duration,
-		FailureReason: m.FailureReason,
-		FinishedAt:    m.FinishedAt,
-		ID:            m.ID,
-		Iid:           m.Iid,
-		Latest:        m.Latest,
-		Name:          m.Name,
-		Path:          m.Path,
-		Retryable:     m.Retryable,
-		StartedAt:     m.StartedAt,
-		Status:        m.Status,
-		Stuck:         m.Stuck,
-		TotalJobs:     m.TotalJobs,
-		UpdatedAt:     m.UpdatedAt,
-		Warnings:      m.Warnings,
-		Jobs:         nil, // not fetched in minimal query to keep complexity low
+	p := &ContextPipeline{
+		ID:     m.ID,
+		Iid:    m.Iid,
+		Status: m.Status,
+		Jobs:   nil,
 	}
-}
-
-// fetchPipelineByID runs a small GraphQL query to load a pipeline by ID. Used only for pipeline webhook events.
-func fetchPipelineByID(ctx context.Context, client *graphql.Client, projectID, pipelineID string) *ContextPipeline {
-	var resp pipelineByIDResponse
-	err := client.Query(ctx, &resp, map[string]any{
-		"project_id":  graphql.ID(projectID),
-		"pipeline_id": graphql.ID(pipelineID),
-	})
-	if err != nil {
-		slogctx.Debug(ctx, "Failed to fetch pipeline by ID (pipeline event)", slog.Any("error", err))
-		return nil
+	if m.ResponseJobs != nil {
+		p.Jobs = m.ResponseJobs.Nodes
 	}
-	if resp.Project == nil || resp.Project.Pipeline == nil {
-		return nil
-	}
-	return resp.Project.Pipeline.toContextPipeline()
+	return p
 }
 
 func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
@@ -102,8 +45,9 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	var (
 		evalContext *Context
 		variables   = map[string]any{
-			"project_id": graphql.ID(state.ProjectID(ctx)),
-			"mr_id":      state.MergeRequestID(ctx),
+			"project_id":  graphql.ID(state.ProjectID(ctx)),
+			"mr_id":       state.MergeRequestID(ctx),
+			"pipeline_id": graphql.ID(state.PipelineID(ctx)),
 		}
 	)
 
@@ -141,14 +85,14 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	evalContext.Group = evalContext.Project.ResponseGroup
 	evalContext.Project.ResponseGroup = nil
 
-	// Set top-level Pipeline: for pipeline webhook events fetch by ID in a separate low-complexity query;
+	// Set top-level Pipeline: for pipeline events use the pipeline queried by ID (minimal, no jobs);
 	// for merge_request/note events use the MR's HeadPipeline.
-	evalContext.Pipeline = evalContext.MergeRequest.HeadPipeline
-	if pid := state.PipelineID(ctx); pid != "" {
-		if p := fetchPipelineByID(ctx, client, state.ProjectID(ctx), pid); p != nil {
-			evalContext.Pipeline = p
-		}
+	if state.PipelineID(ctx) != "" && evalContext.Project.ResponsePipeline != nil {
+		evalContext.Pipeline = evalContext.Project.ResponsePipeline.toContextPipeline()
+	} else {
+		evalContext.Pipeline = evalContext.MergeRequest.HeadPipeline
 	}
+	evalContext.Project.ResponsePipeline = nil
 	if evalContext.Pipeline != nil && evalContext.Pipeline.ResponseJobs != nil {
 		evalContext.Pipeline.Jobs = evalContext.Pipeline.ResponseJobs.Nodes
 		evalContext.Pipeline.ResponseJobs = nil
