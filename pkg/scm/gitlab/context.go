@@ -28,8 +28,10 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	var (
 		evalContext *Context
 		variables   = map[string]any{
-			"project_id": graphql.ID(state.ProjectID(ctx)),
-			"mr_id":      state.MergeRequestID(ctx),
+			"project_id":             graphql.ID(state.ProjectID(ctx)),
+			"mr_id":                  state.MergeRequestID(ctx),
+			"pipeline_id":            graphql.ID(state.PipelineID(ctx)),
+			"request_pipeline_by_id": state.PipelineID(ctx) != "",
 		}
 	)
 
@@ -67,10 +69,25 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 	evalContext.Group = evalContext.Project.ResponseGroup
 	evalContext.Project.ResponseGroup = nil
 
+	// Set top-level Pipeline: for pipeline events use the pipeline queried by ID;
+	// for merge_request/note events use the MR's HeadPipeline.
+	if state.PipelineID(ctx) != "" && evalContext.Project.ResponsePipeline != nil {
+		evalContext.Pipeline = evalContext.Project.ResponsePipeline
+	} else {
+		evalContext.Pipeline = evalContext.MergeRequest.HeadPipeline
+	}
+
+	evalContext.Project.ResponsePipeline = nil
+
+	if evalContext.Pipeline != nil && evalContext.Pipeline.ResponseJobs != nil {
+		evalContext.Pipeline.Jobs = evalContext.Pipeline.ResponseJobs.Nodes
+		evalContext.Pipeline.ResponseJobs = nil
+	}
+
 	evalContext.MergeRequest.Notes = evalContext.MergeRequest.ResponseNotes.Nodes
 	evalContext.MergeRequest.ResponseNotes.Nodes = nil
 
-	if len(evalContext.MergeRequest.ResponseOldestCommits.Nodes) > 0 {
+	if evalContext.MergeRequest.ResponseOldestCommits != nil && len(evalContext.MergeRequest.ResponseOldestCommits.Nodes) > 0 {
 		evalContext.MergeRequest.FirstCommit = &evalContext.MergeRequest.ResponseOldestCommits.Nodes[0]
 
 		tmp := time.Since(*evalContext.MergeRequest.FirstCommit.CommittedDate)
@@ -79,7 +96,7 @@ func NewContext(ctx context.Context, baseURL, token string) (*Context, error) {
 
 	evalContext.MergeRequest.ResponseOldestCommits = nil
 
-	if len(evalContext.MergeRequest.ResponseNewestCommits.Nodes) > 0 {
+	if evalContext.MergeRequest.ResponseNewestCommits != nil && len(evalContext.MergeRequest.ResponseNewestCommits.Nodes) > 0 {
 		evalContext.MergeRequest.LastCommit = &evalContext.MergeRequest.ResponseNewestCommits.Nodes[0]
 
 		tmp := time.Since(*evalContext.MergeRequest.LastCommit.CommittedDate)
