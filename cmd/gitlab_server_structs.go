@@ -1,5 +1,7 @@
 package cmd
 
+import "strconv"
+
 type GitlabWebhookPayload struct {
 	EventType        string                                `json:"event_type"`
 	ObjectKind       string                                `json:"object_kind"`                 // "object_kind" is sent e.g. "pipeline" when event_type is omitted
@@ -18,6 +20,14 @@ type GitlabWebhookPayloadObjectAttributes struct {
 	Commit     GitlabWebhookPayloadCommit `json:"commit"`
 }
 
+func (o *GitlabWebhookPayloadObjectAttributes) GetIID() string {
+	if o == nil {
+		return ""
+	}
+
+	return strconv.Itoa(o.IID)
+}
+
 func (o *GitlabWebhookPayloadObjectAttributes) GetCommitID() string {
 	if o == nil {
 		return ""
@@ -33,6 +43,14 @@ func (o *GitlabWebhookPayloadObjectAttributes) GetCommitID() string {
 type GitlabWebhookPayloadMergeRequest struct {
 	IID        int                        `json:"iid"`
 	LastCommit GitlabWebhookPayloadCommit `json:"last_commit"`
+}
+
+func (m *GitlabWebhookPayloadMergeRequest) GetIID() string {
+	if m == nil {
+		return ""
+	}
+
+	return strconv.Itoa(m.IID)
 }
 
 func (m *GitlabWebhookPayloadMergeRequest) GetCommitID() string {

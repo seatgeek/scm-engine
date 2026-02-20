@@ -9,7 +9,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"strconv"
 
 	"github.com/jippi/scm-engine/pkg/config"
 	"github.com/jippi/scm-engine/pkg/state"
@@ -91,21 +90,28 @@ func GitLabWebhookHandler(ctx context.Context, webhookSecret string) http.Handle
 
 		switch eventType {
 		case "merge_request":
-			id = strconv.Itoa(payload.ObjectAttributes.IID)
+			id = payload.ObjectAttributes.GetIID()
 			gitSha = payload.ObjectAttributes.GetCommitID()
 
 		case "note":
-			id = strconv.Itoa(payload.MergeRequest.IID)
+			id = payload.MergeRequest.GetIID()
 			gitSha = payload.MergeRequest.GetCommitID()
 
 		case "pipeline":
 			// For pipeline events, MR info is in merge_request field, SHA in commit or object_attributes
-			id = strconv.Itoa(payload.MergeRequest.IID)
+			id = payload.MergeRequest.GetIID()
 			gitSha = payload.ObjectAttributes.GetCommitID()
-			pipelineID = strconv.Itoa(payload.ObjectAttributes.IID)
+			pipelineID = payload.ObjectAttributes.GetIID()
 
 		default:
 			errHandler(ctx, w, http.StatusInternalServerError, fmt.Errorf("unknown event type: %s (object_kind: %s)", payload.EventType, payload.ObjectKind))
+
+			return
+		}
+
+		// Validate that the payload is associated with a merge request
+		if id == "" {
+			errHandler(ctx, w, http.StatusBadRequest, errors.New("payload is not associated with a merge request, skipping"))
 
 			return
 		}
