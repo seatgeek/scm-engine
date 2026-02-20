@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -678,17 +678,6 @@ GitLab
 </li>
         
           <li class="md-nav__item">
-  <a href="#merge_request.head_pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        head_pipeline
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#merge_request.notes[]" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -852,6 +841,51 @@ GitLab
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pipeline.jobs[]" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        jobs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="jobs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pipeline.jobs[].stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1202,17 +1236,6 @@ GitHub (WIP)
 </li>
         
           <li class="md-nav__item">
-  <a href="#merge_request.head_pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        head_pipeline
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#merge_request.notes[]" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1376,6 +1399,51 @@ GitHub (WIP)
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pipeline.jobs[]" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        jobs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="jobs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pipeline.jobs[].stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1588,48 +1656,6 @@ GitHub (WIP)
 <li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">labels</span><span class="o">[]</span><span class="p">.</span><span class="nc">description</span></code> ; <code>string</code>. Description of the label (Markdown rendered as HTML for caching)</li>
 <li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">labels</span><span class="o">[]</span><span class="p">.</span><span class="nc">id</span></code> ; <code>string</code>. Label ID</li>
 <li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">labels</span><span class="o">[]</span><span class="p">.</span><span class="nc">title</span></code> ; <code>string</code>. Content of the label</li>
-</ul>
-<h3 id="merge_request.head_pipeline"><code>merge_request.head_pipeline</code><a class="headerlink" href="#merge_request.head_pipeline" title="Permanent link">&para;</a></h3>
-<p>Pipeline running on the branch HEAD of the merge request</p>
-<ul>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">active</span></code> ; <code>boolean</code>. Indicates if the pipeline is active</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">cancelable</span></code> ; <code>boolean</code>. Specifies if a pipeline can be canceled</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">complete</span></code> ; <code>boolean</code>. Indicates if a pipeline is complete</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">duration</span></code> ; <code>optional int</code>. Duration of the pipeline in seconds</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">failure_reason</span></code> ; <code>optional string</code>. The reason why the pipeline failed</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">finished_at</span></code> ; <code>optional time</code>. Timestamp of the pipeline's completion</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">id</span></code> ; <code>string</code>. ID of the pipeline</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">iid</span></code> ; <code>string</code>. Internal ID of the pipeline</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">latest</span></code> ; <code>boolean</code>. If the pipeline is the latest one or not</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">name</span></code> ; <code>optional string</code>. Name of the pipeline</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">path</span></code> ; <code>optional string</code>. Relative path to the pipeline's page</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">retryable</span></code> ; <code>boolean</code>. Specifies if a pipeline can be retried</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">started_at</span></code> ; <code>optional time</code>. Timestamp when the pipeline was started</li>
-<li>
-<p><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">status</span></code> (enum) Status of the pipeline</p>
-<p><em>The following values are valid:</em></p>
-<ul>
-<li><code>CANCELED</code> </li>
-<li><code>CANCELING</code> </li>
-<li><code>CREATED</code> </li>
-<li><code>FAILED</code> </li>
-<li><code>MANUAL</code> </li>
-<li><code>PENDING</code> </li>
-<li><code>PREPARING</code> </li>
-<li><code>RUNNING</code> </li>
-<li><code>SCHEDULED</code> </li>
-<li><code>SKIPPED</code> </li>
-<li><code>SUCCESS</code> </li>
-<li><code>WAITING_FOR_CALLBACK</code> </li>
-<li><code>WAITING_FOR_RESOURCE</code> </li>
-</ul>
-</li>
-<li>
-<p><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">stuck</span></code> ; <code>boolean</code>. If the pipeline is stuck</p>
-</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">total_jobs</span></code> ; <code>int</code>. The total number of jobs in the pipeline</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">updated_at</span></code> ; <code>time</code>. Timestamp of the pipeline's last activity</li>
-<li><code class="language-css highlight"><span class="nt">merge_request</span><span class="p">.</span><span class="nc">head_pipeline</span><span class="p">.</span><span class="nc">warnings</span></code> ; <code>boolean</code>. Indicates if a pipeline has warnings</li>
 </ul>
 <h3 id="merge_request.notes[]"><code>merge_request.notes[]</code><a class="headerlink" href="#merge_request.notes[]" title="Permanent link">&para;</a></h3>
 <p>All notes on this MR</p>
@@ -1845,6 +1871,64 @@ GitHub (WIP)
 <p><code class="language-css highlight"><span class="nt">current_user</span><span class="p">.</span><span class="nc">username</span></code> ; <code>string</code>. Username of the user. Unique within this instance of GitLab</p>
 </li>
 </ul>
+<h2 id="pipeline"><code>pipeline</code><a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h2>
+<p>Information about the Pipeline that triggered the evaluation. Only populated for pipeline webhook events.</p>
+<ul>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">active</span></code> ; <code>boolean</code>. Indicates if the pipeline is active</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">cancelable</span></code> ; <code>boolean</code>. Specifies if a pipeline can be canceled</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">complete</span></code> ; <code>boolean</code>. Indicates if a pipeline is complete</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">failure_reason</span></code> ; <code>optional string</code>. The reason why the pipeline failed</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">id</span></code> ; <code>string</code>. ID of the pipeline</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">iid</span></code> ; <code>string</code>. Internal ID of the pipeline</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">latest</span></code> ; <code>boolean</code>. If the pipeline is the latest one or not</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">name</span></code> ; <code>optional string</code>. Name of the pipeline</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">path</span></code> ; <code>optional string</code>. Relative path to the pipeline's page</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">ref</span></code> ; <code>optional string</code>. Git ref (branch or tag) that the pipeline ran on</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">retryable</span></code> ; <code>boolean</code>. Specifies if a pipeline can be retried</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">sha</span></code> ; <code>optional string</code>. SHA of the commit the pipeline ran on</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">source</span></code> ; <code>optional string</code>. How the pipeline was triggered (push, web, trigger, schedule, api, external, pipeline, etc.)</li>
+<li>
+<p><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">status</span></code> (enum) Status of the pipeline</p>
+<p><em>The following values are valid:</em></p>
+<ul>
+<li><code>CANCELED</code> </li>
+<li><code>CANCELING</code> </li>
+<li><code>CREATED</code> </li>
+<li><code>FAILED</code> </li>
+<li><code>MANUAL</code> </li>
+<li><code>PENDING</code> </li>
+<li><code>PREPARING</code> </li>
+<li><code>RUNNING</code> </li>
+<li><code>SCHEDULED</code> </li>
+<li><code>SKIPPED</code> </li>
+<li><code>SUCCESS</code> </li>
+<li><code>WAITING_FOR_CALLBACK</code> </li>
+<li><code>WAITING_FOR_RESOURCE</code> </li>
+</ul>
+</li>
+<li>
+<p><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">stuck</span></code> ; <code>boolean</code>. If the pipeline is stuck</p>
+</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">total_jobs</span></code> ; <code>int</code>. The total number of jobs in the pipeline</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">warnings</span></code> ; <code>boolean</code>. Indicates if a pipeline has warnings</li>
+</ul>
+<h3 id="pipeline.jobs[]"><code>pipeline.jobs[]</code><a class="headerlink" href="#pipeline.jobs[]" title="Permanent link">&para;</a></h3>
+<p>Jobs in this pipeline</p>
+<ul>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">active</span></code> ; <code>boolean</code>. Whether the job is active</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">allow_failure</span></code> ; <code>boolean</code>. Whether this job is allowed to fail</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">id</span></code> ; <code>string</code>. ID of the job</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">manual_job</span></code> ; <code>boolean</code>. Whether the job is a manual action</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">name</span></code> ; <code>optional string</code>. Name of the job</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">retried</span></code> ; <code>optional boolean</code>. Indicates that the job is retried</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">status</span></code> ; <code>optional string</code>. Status of the job</li>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">stuck</span></code> ; <code>boolean</code>. Indicates the job is stuck</li>
+</ul>
+<h4 id="pipeline.jobs[].stage"><code>pipeline.jobs[].stage</code><a class="headerlink" href="#pipeline.jobs[].stage" title="Permanent link">&para;</a></h4>
+<p>Stage of the job</p>
+<ul>
+<li><code class="language-css highlight"><span class="nt">pipeline</span><span class="p">.</span><span class="nc">jobs</span><span class="o">[]</span><span class="p">.</span><span class="nc">stage</span><span class="p">.</span><span class="nc">name</span></code> ; <code>optional string</code>. Name of the stage</li>
+</ul>
 <h2 id="webhook_event"><code>webhook_event</code><a class="headerlink" href="#webhook_event" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
 <p class="admonition-title"><code>webhook_event</code> attribute is only available in <code>server</code> mode</p>
@@ -1911,10 +1995,10 @@ GitHub (WIP)
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "navigation.expand", "navigation.instant", "navigation.sections", "navigation.top", "navigation.tracking", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "navigation.expand", "navigation.instant", "navigation.sections", "navigation.top", "navigation.tracking", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
