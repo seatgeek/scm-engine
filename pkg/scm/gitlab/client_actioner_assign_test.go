@@ -261,19 +261,6 @@ func TestAssignReviewers_static(t *testing.T) {
 			wantErr:                  errors.New("Required 'step' key 'user_ids' is missing"),
 		},
 		{
-			name: "should not assign if list members already satisfy the limit",
-			step: config.ActionStep{
-				"source":   "static",
-				"user_ids": []string{"50", "100"},
-				"limit":    1,
-			},
-			mockGetReviewersResponse: scm.Actors{
-				{ID: "50", Username: "existing"},
-			},
-			wantUpdate: &scm.UpdateMergeRequestOptions{},
-			wantErr:    nil,
-		},
-		{
 			name: "should assign single user with default limit",
 			step: config.ActionStep{
 				"source":   "static",
@@ -482,6 +469,23 @@ func TestAssignReviewers_randomTopUp(t *testing.T) {
 				{ID: "100", Username: "already-assigned"},
 			},
 			wantReviewerIDs: nil,
+			wantErr:         nil,
+		},
+		{
+			// needed (2) < len(candidates) (5), so the seeded perm actually chooses a
+			// subset AND its ordering, exercising the candidates[perm[i]] selection path
+			// rather than a fully-determined result.
+			name: "should randomly pick the seeded subset of list members to fill remaining slots",
+			step: config.ActionStep{
+				"source":   "static",
+				"user_ids": []string{"100", "200", "300", "400", "500"},
+				"mode":     "random",
+				"limit":    2,
+			},
+			mockGetReviewersResponse: scm.Actors{
+				{ID: "50", Username: "not-in-list"},
+			},
+			wantReviewerIDs: scm.Ptr([]int{50, 100, 500}), // seeded pick: a "take first N" bug would give {50, 100, 200}
 			wantErr:         nil,
 		},
 	}

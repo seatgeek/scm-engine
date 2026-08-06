@@ -159,9 +159,16 @@ This key controls what kind of action that should be taken.
 
 * `#!yaml assign_reviewers` to assign reviewers to the Merge Request
 
-      Reviewers are only assigned when the Merge Request has no reviewers yet, so
-      re-running `scm-engine` will not keep adding people. The Merge Request author
-      is never assigned as their own reviewer.
+      By default (`mode: random`), reviewers are "topped up" from the `source`:
+      reviewers from the source who are already assigned count towards `limit`, and
+      only enough new ones are added to reach it. Re-running `scm-engine` therefore
+      does not keep adding people — it stops once `limit` is satisfied or there are
+      no new reviewers left to add. Use `mode: static` to always ensure a specific,
+      explicitly listed set of reviewers is assigned, even when the Merge Request
+      already has reviewers. For the `codeowners` and `backstage` sources, the Merge
+      Request author is not assigned as their own reviewer. See
+      [Reviewer assignment modes](gitlab/examples.md#reviewer-assignment-modes) for
+      details and examples.
 
       *Additional fields:*
 
@@ -172,8 +179,8 @@ This key controls what kind of action that should be taken.
           * `#!yaml static` use the user IDs listed in `user_ids`.
 
       - (optional) `#!css user_ids` A list of user IDs to pick from. Required when `source` is `static`, ignored otherwise.
-      - (optional) `#!css limit` The maximum number of reviewers to assign. Defaults to `1`.
-      - (optional) `#!css mode` How reviewers are picked from the eligible set. Only `random` is supported, which is also the default.
+      - (optional) `#!css limit` The maximum number of reviewers to assign. Defaults to `1`. Ignored when `mode` is `static`.
+      - (optional) `#!css mode` How reviewers are picked from the eligible set. One of `random` (default) or `static`. `random` picks reviewers at random from the `source`, topping up until `limit` reviewers from the source are assigned. `static` assigns all listed `user_ids` (ignoring `limit`) and always ensures they are present, even alongside existing reviewers; it is only valid with `source: static`. See [Reviewer assignment modes](gitlab/examples.md#reviewer-assignment-modes).
 
       ```{.yaml title="'assign_reviewers' example"}
       - action: assign_reviewers
