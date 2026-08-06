@@ -106,17 +106,28 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 		// entirely when reviewers already exist or endlessly adding on repeat runs.
 		var candidates scm.Actors
 
-		satisfied := 0
+		satisfiedIDs := make(map[int]struct{})
+		candidateIDs := make(map[int]struct{})
 
 		for _, actor := range eligibleReviewers {
-			if _, ok := alreadyAssigned[actor.IntID()]; ok {
-				satisfied++
-
+			id := actor.IntID()
+			if id == 0 {
 				continue
 			}
 
+			if _, ok := alreadyAssigned[id]; ok {
+				satisfiedIDs[id] = struct{}{}
+				continue
+			}
+
+			if _, ok := candidateIDs[id]; ok {
+				continue
+			}
+			candidateIDs[id] = struct{}{}
 			candidates = append(candidates, actor)
 		}
+
+		satisfied := len(satisfiedIDs)
 
 		needed := desiredLimit - satisfied
 		if needed > len(candidates) {
