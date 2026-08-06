@@ -130,8 +130,7 @@
             "additionalProperties": false,
             "type": "object",
             "required": [
-              "action",
-              "source"
+              "action"
             ]
           }
         },
