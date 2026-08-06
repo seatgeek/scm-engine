@@ -1588,9 +1588,16 @@ GitHub (WIP)
 </li>
 <li>
 <p><code class="language-yaml highlight"><span class="l l-Scalar l-Scalar-Plain">assign_reviewers</span></code> to assign reviewers to the Merge Request</p>
-<p>Reviewers are only assigned when the Merge Request has no reviewers yet, so
-  re-running <code>scm-engine</code> will not keep adding people. The Merge Request author
-  is never assigned as their own reviewer.</p>
+<p>By default (<code>mode: random</code>), reviewers are "topped up" from the <code>source</code>:
+  reviewers from the source who are already assigned count towards <code>limit</code>, and
+  only enough new ones are added to reach it. Re-running <code>scm-engine</code> therefore
+  does not keep adding people — it stops once <code>limit</code> is satisfied or there are
+  no new reviewers left to add. Use <code>mode: static</code> to always ensure a specific,
+  explicitly listed set of reviewers is assigned, even when the Merge Request
+  already has reviewers. For the <code>codeowners</code> and <code>backstage</code> sources, the Merge
+  Request author is not assigned as their own reviewer. See
+  <a href="../gitlab/examples/#reviewer-assignment-modes">Reviewer assignment modes</a> for
+  details and examples.</p>
 <p><em>Additional fields:</em></p>
 <ul>
 <li>
@@ -1604,8 +1611,8 @@ GitHub (WIP)
 <li>
 <p>(optional) <code class="language-css highlight"><span class="nt">user_ids</span></code> A list of user IDs to pick from. Required when <code>source</code> is <code>static</code>, ignored otherwise.</p>
 </li>
-<li>(optional) <code class="language-css highlight"><span class="nt">limit</span></code> The maximum number of reviewers to assign. Defaults to <code>1</code>.</li>
-<li>(optional) <code class="language-css highlight"><span class="nt">mode</span></code> How reviewers are picked from the eligible set. Only <code>random</code> is supported, which is also the default.</li>
+<li>(optional) <code class="language-css highlight"><span class="nt">limit</span></code> The maximum number of reviewers to assign. Defaults to <code>1</code>. Ignored when <code>mode</code> is <code>static</code>.</li>
+<li>(optional) <code class="language-css highlight"><span class="nt">mode</span></code> How reviewers are picked from the eligible set. One of <code>random</code> (default) or <code>static</code>. <code>random</code> picks reviewers at random from the <code>source</code>, topping up until <code>limit</code> reviewers from the source are assigned. <code>static</code> assigns all listed <code>user_ids</code> (ignoring <code>limit</code>) and always ensures they are present, even alongside existing reviewers; it is only valid with <code>source: static</code>. See <a href="../gitlab/examples/#reviewer-assignment-modes">Reviewer assignment modes</a>.</li>
 </ul>
 <div class="language-yaml highlight"><span class="filename">&#x27;assign_reviewers&#x27; example</span><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">assign_reviewers</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codeowners</span>

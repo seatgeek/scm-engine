@@ -631,6 +631,45 @@ GitLab
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#reviewer-assignment-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reviewer assignment modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reviewer assignment modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode-random-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mode: random (default)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-static" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mode: static
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -976,6 +1015,45 @@ GitHub (WIP)
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#reviewer-assignment-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reviewer assignment modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reviewer assignment modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode-random-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mode: random (default)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-static" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mode: static
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1316,6 +1394,42 @@ GitHub (WIP)
 <a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">        </span><span class="nt">limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">        </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random</span>
 </code></pre></div>
+<h2 id="reviewer-assignment-modes">Reviewer assignment modes<a class="headerlink" href="#reviewer-assignment-modes" title="Permanent link">&para;</a></h2>
+<p>The <code>mode</code> field controls how reviewers are selected from the <code>source</code>.</p>
+<h3 id="mode-random-default"><code>mode: random</code> (default)<a class="headerlink" href="#mode-random-default" title="Permanent link">&para;</a></h3>
+<p><code>random</code> picks reviewers at random from the source, "topping up" the Merge Request until <code>limit</code> reviewers <strong>from the source</strong> are assigned:</p>
+<ul>
+<li>It counts how many of the source's reviewers are already assigned towards the <code>limit</code>.</li>
+<li>If the <code>limit</code> is already satisfied by reviewers from the source, it does nothing.</li>
+<li>Otherwise it randomly assigns just enough not-yet-assigned reviewers from the source to reach the <code>limit</code>.</li>
+<li>Existing reviewers are always preserved, and reviewers are never added twice, so repeated evaluations are idempotent.</li>
+</ul>
+<p>Reviewers that are not part of the source (for example, someone added manually) do not count towards the <code>limit</code>.</p>
+<h3 id="mode-static"><code>mode: static</code><a class="headerlink" href="#mode-static" title="Permanent link">&para;</a></h3>
+<p>The <code>random</code> mode only ever assigns reviewers that come from the source. When you need specific, explicitly listed reviewers to <strong>always</strong> be assigned — even alongside unrelated reviewers, and regardless of <code>limit</code> — use <code>mode: static</code>:</p>
+<div class="language-yaml highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># yaml-language-server: $schema=https://jippi.github.io/scm-engine/scm-engine.schema.json</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">actions</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;assign&quot;</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|1</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">           </span><span class="no">merge_request.state_is(&quot;opened&quot;)</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">        </span><span class="no">&amp;&amp; not merge_request.approved</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="nt">then</span><span class="p">:</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">assign_reviewers</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">static</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">        </span><span class="nt">user_ids</span><span class="p">:</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;123&quot;</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">        </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">static</span>
+</code></pre></div>
+<p><code>mode: static</code> behaves as follows:</p>
+<ul>
+<li>It assigns <strong>all</strong> listed <code>user_ids</code>. The <code>limit</code> field is ignored in this mode.</li>
+<li>It <strong>always</strong> ensures those users are assigned, even when other reviewers are already present.</li>
+<li>Existing reviewers are <strong>preserved</strong> — the listed users are added alongside them, never replacing them.</li>
+<li>It is <strong>idempotent</strong>: if a listed user is already a reviewer, they are not re-added and the Merge Request is left untouched.</li>
+<li>It is only supported with <code>source: static</code>. Using it with <code>codeowners</code> or <code>backstage</code> is a configuration error.</li>
+</ul>
 
 
 

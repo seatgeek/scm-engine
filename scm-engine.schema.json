@@ -122,9 +122,10 @@
               "mode": {
                 "type": "string",
                 "enum": [
-                  "random"
+                  "random",
+                  "static"
                 ],
-                "description": "The mode of assigning reviewers"
+                "description": "The mode of assigning reviewers.\n\n\"random\" (default) randomly assigns reviewers from the source, topping up until\n`limit` reviewers from the source are assigned. Reviewers from the source that are\nalready assigned count towards the `limit`, and existing reviewers are preserved.\n\n\"static\" assigns all explicitly listed `user_ids` (`limit` is ignored), always\nensuring they are present even when other reviewers are already assigned. Only\nsupported with `source: static`."
               }
             },
             "additionalProperties": false,
