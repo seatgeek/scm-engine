@@ -117,13 +117,16 @@ func (c *Client) AssignReviewers(ctx context.Context, evalContext scm.EvalContex
 
 			if _, ok := alreadyAssigned[id]; ok {
 				satisfiedIDs[id] = struct{}{}
+
 				continue
 			}
 
 			if _, ok := candidateIDs[id]; ok {
 				continue
 			}
+
 			candidateIDs[id] = struct{}{}
+
 			candidates = append(candidates, actor)
 		}
 
